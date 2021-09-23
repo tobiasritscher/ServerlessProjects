@@ -2,8 +2,8 @@
 SCAD ZHAW
 
 ## Team:
-Adrian Hornung
-Jari Rentsch
-Kunsang Kündetsang
-Sydney Nguyen
-Tobi Ritsch
+- Adrian Hornung (hornuadr)
+- Jari Rentsch (rentsjar)
+- Kunsang Kündetsang (kuendkun)
+- Sydney Nguyen (nguysyd)
+- Tobi Ritsch (ritsctob)
