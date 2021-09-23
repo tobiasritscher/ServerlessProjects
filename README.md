@@ -6,4 +6,4 @@ SCAD ZHAW
 - Jari Rentsch (rentsjar)
 - Kunsang Kündetsang (kuendkun)
 - Sydney Nguyen (nguysyd)
-- Tobi Ritsch (ritsctob)
+- Tobi Ritscher (ritsctob)
