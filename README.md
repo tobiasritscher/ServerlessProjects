@@ -5,5 +5,5 @@ SCAD ZHAW
 - Adrian Hornung (hornuadr)
 - Jari Rentsch (rentsjar)
 - Kunsang Kündetsang (kuendkun)
-- Sydney Nguyen (nguysyd)
+- Sydney Nguyen (nguyesyd)
 - Tobi Ritscher (ritsctob)
