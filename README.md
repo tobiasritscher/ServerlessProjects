@@ -11,7 +11,7 @@ SCAD ZHAW
 
 ## [P01:](/Labs/Lab01)
 To achieve the tasks in this lab, we have created an account on the Google Cloud Platform. We used Python to implement a cloud function on this Faas service.
-[Here](/Labs/Lab01/P01%20SCAD.pdf) you can find the report PDF of the Lab.
+[Here](/Labs/Lab01/Group04_P01_Submission.pdf) you can find the report PDF of the Lab.
 
 - [E0](/Labs/Lab01/E0/) / [function](https://europe-west6-formal-airway-260.cloudfunctions.net/ex1-e0)
 - [E2](/Labs/Lab01/E2/) / [function](https://europe-west6-formal-airway-260.cloudfunctions.net/ex1-e2)
