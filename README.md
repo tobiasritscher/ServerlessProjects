@@ -1,4 +1,4 @@
-# SCAD-CLUELESS
+# SCAD-CLUELESS Group 04
 SCAD ZHAW
 
 ## Team:
