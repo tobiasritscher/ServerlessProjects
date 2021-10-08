@@ -1,10 +1,10 @@
 import os
+import logging
+import datetime 
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from flask import abort, render_template
-import logging
 from wtforms.csrf.session import SessionCSRF
-from datetime import timedelta
 
 DEBUG = True
 
@@ -34,8 +34,12 @@ class FrontendForm(FlaskForm):
         csrf = False
         csrf_class = SessionCSRF
         csrf_secret = Config.CSRF_SECRET 
-        csrf_time_limit = timedelta(minutes=20)
+        csrf_time_limit = datetime.timedelta(minutes=20)
 
+class Results:
+    def __init__(self, text):
+        self.text = text
+        self.datetime = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
 
 def main(request):
@@ -50,6 +54,7 @@ def main(request):
         return render_template("form.html", title="Form", form=form)
     elif request.method == "POST":
         # TODO: handle parsing of the form
-        return render_template("form_submitted.html", title="Sucess submitting", form=form)
+        res = Results(form.text.data)
+        return render_template("form_submitted.html", title="Sucess submitting", result=res)
     else:
         abort(405)
