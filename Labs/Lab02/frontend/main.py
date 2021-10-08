@@ -28,7 +28,7 @@ class Config:
         return values
 
 class FrontendForm(flask_wtf.FlaskForm):
-    text = wtforms.TextAreaField('Text')
+    text = wtforms.TextAreaField('Text', validators=[wtforms.validators.DataRequired()])
     submit = wtforms.SubmitField('Submit')
 
     class Meta:
@@ -42,21 +42,33 @@ class Results:
         self.text = text
         self.datetime = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
+def handle_invalid_form(request, form):
+    return handle_get(request, form)
+
+def handle_post(request, form):
+    # TODO: handle parsing of the form
+    if form.validate_on_submit():
+        res = Results(form.text.data)
+        return flask.render_template("form_submitted.html", title="Sucess submitting", result=res)
+    else:
+        return handle_invalid_form(request,form)
+
+def handle_get(request, form):
+    return flask.render_template("form.html", title="Form", form=form)
 
 def main(request):
     # check if function is setup correctly
     if len(conf := Config.not_setup()) > 0:
         logging.error(f"missing database configuraion for {conf}")
+
         if not DEBUG:
             flask.abort(500)
 
     form = FrontendForm()
     if request.method == "GET":
-        return flask.render_template("form.html", title="Form", form=form)
+        return handle_get(request, form)
     elif request.method == "POST":
-        # TODO: handle parsing of the form
-        res = Results(form.text.data)
-        return flask.render_template("form_submitted.html", title="Sucess submitting", result=res)
+        return handle_post(request, form)
     else:
         flask.abort(405)
 
