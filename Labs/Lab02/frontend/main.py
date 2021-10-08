@@ -1,9 +1,10 @@
 import os
 import logging
 import datetime 
-from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
-from flask import abort, render_template
+
+import flask 
+import flask_wtf 
+import wtforms 
 from wtforms.csrf.session import SessionCSRF
 
 DEBUG = True
@@ -26,9 +27,9 @@ class Config:
                 values.append(val)
         return values
 
-class FrontendForm(FlaskForm):
-    text = StringField('Text')
-    submit = SubmitField('Submit')
+class FrontendForm(flask_wtf.FlaskForm):
+    text = wtforms.TextAreaField('Text')
+    submit = wtforms.SubmitField('Submit')
 
     class Meta:
         csrf = False
@@ -47,14 +48,15 @@ def main(request):
     if len(conf := Config.not_setup()) > 0:
         logging.error(f"missing database configuraion for {conf}")
         if not DEBUG:
-            abort(500)
+            flask.abort(500)
 
     form = FrontendForm()
     if request.method == "GET":
-        return render_template("form.html", title="Form", form=form)
+        return flask.render_template("form.html", title="Form", form=form)
     elif request.method == "POST":
         # TODO: handle parsing of the form
         res = Results(form.text.data)
-        return render_template("form_submitted.html", title="Sucess submitting", result=res)
+        return flask.render_template("form_submitted.html", title="Sucess submitting", result=res)
     else:
-        abort(405)
+        flask.abort(405)
+
