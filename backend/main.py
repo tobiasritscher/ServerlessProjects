@@ -1,7 +1,7 @@
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
-import time
+import datetime
 
 # initializations 
 jsonfile = {
@@ -22,10 +22,10 @@ firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 #adding example data
-def add():
+def add(text="default"):
     db.collection(u'feedbacks').add({
-        'feedback_text':'My example feedback text.',
-        'timestamp': time.time()
+        'feedback_text':text,
+        'timestamp': datetime.datetime.now(datetime.timezone.utc).isoformat()
     })
 
 #Reading the data
@@ -35,11 +35,11 @@ def read_db():
     output = []
     for doc in docs:
         output.append(doc.to_dict())
-        #print(doc.to_dict())
+
     return output
 
 def hello_world(request):
-    add()
+    add('TYPE YOUR FEEDBACK HERE.')
     return read_db()
-    
+
 #print(hello_world(""))
