@@ -39,7 +39,7 @@ def read_db():
     return output
 
 def hello_world(request):
-    add('TYPE YOUR FEEDBACK HERE.')
+    #add('Lets do thissss.')
     return read_db()
 
-#print(hello_world(""))
+print(hello_world(""))
