@@ -19,3 +19,5 @@ To achieve the tasks in this lab, we have created an account on the Google Cloud
 - [E7](/Labs/Lab01/E7/) / [function](https://europe-west6-formal-airway-260.cloudfunctions.net/ex1-e7)
 - [E8](/Labs/Lab01/E8/) / [function](https://europe-west6-formal-airway-260.cloudfunctions.net/ex1-E8)
 
+
+## [P02:](/Labs/Lab02)
