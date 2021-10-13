@@ -1,3 +1,4 @@
 # Function dependencies, for example:
 # package>=version
 Flask-WTF==0.15.1
+firebase-admin==5.0.3
