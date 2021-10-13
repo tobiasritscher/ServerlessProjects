@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Success</h1>
+<h2>Text</h2>
+<ol>
+    {% for feedback in feedbacks %}
+        <li>{{ feedback.date }} <br> {{ feedback.text }}</li>
+    {% endfor %}
+</ol>
+{% endblock %}
