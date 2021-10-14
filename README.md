@@ -27,8 +27,16 @@ To achieve the tasks in this lab, we have created an account on the Google Cloud
   | user  | password |
   |-------|----------|
   | admin | admin    |
-  
 
+
+ ### Documentation:
+  
+  Our frontend and the overview page (displays all feedbacks) is written in Python and deployed on Google Cloud Functions. 
+  Our analytics page is written in Java and is also deployed on Google Cloud Functions.
+  We first intended to chose Amazon Web Services as the provider for the database but then we realised that it wasn't possible to get a free database with them. In the end we settled for a Firebase (Firestore) database since that was free and easy to use. 
+  Since both GCF and Firebase are developed by Google we decided to make the analytics page in Java so that we have a polyglot application.  
+  
+  
 ## [P03:](/Labs/Lab03)
 Our workflow manager is written in Python and can be found [here]().
 The dummy functions which are called by the manager are listed below:
@@ -38,11 +46,8 @@ The dummy functions which are called by the manager are listed below:
 - [f3](/Labs/Lab03/f3/) / [function](https://europe-west6-formal-airway-260.cloudfunctions.net/ex1-e7)
 - [f4](/Labs/Lab03/f4/) / [function](https://europe-west6-formal-airway-260.cloudfunctions.net/ex1-E8)
 
+### Documentation:
+ The observation we made from this experiment can be found [here] (/Labs/Lab03/observations/).
 
- ### Documentation:
-  
-  Our frontend and the overview page (displays all feedbacks) is written in Python and deployed on Google Cloud Functions. 
-  Our analytics page is written in Java and is also deployed on Google Cloud Functions.
-  We first intended to chose Amazon Web Services as the provider for the database but then we realised that it wasn't possible to get a free database with them. In the end we settled for a Firebase (Firestore) database since that was free and easy to use. 
-  Since both GCF and Firebase are developed by Google we decided to make the analytics page in Java so that we have a polyglot application.  
+
  
