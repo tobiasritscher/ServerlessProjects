@@ -39,12 +39,19 @@ To achieve the tasks in this lab, we have created an account on the Google Cloud
   
 ## [P03:](/Labs/Lab03)
 Our workflow manager and the dummy functions are listed below and the observations we have made are [here](https://github.zhaw.ch/nguyesyd/SCAD-CLUELESS/blob/master/Labs/Lab03/observations.txt)
-- [manager](/Labs/Lab03/f0/) / [function](https://europe-west6-formal-airway-260.cloudfunctions.net/ex1-e0)
-- [f0](/Labs/Lab03/f0/) / [function](https://europe-west6-formal-airway-260.cloudfunctions.net/ex1-e0)
-- [f1](/Labs/Lab03/f1/) / [function](https://europe-west6-formal-airway-260.cloudfunctions.net/ex1-e2)
-- [f2](/Labs/Lab03/f2/) / [function](https://europe-west6-formal-airway-260.cloudfunctions.net/ex1-e4)
-- [f3](/Labs/Lab03/f3/) / [function](https://europe-west6-formal-airway-260.cloudfunctions.net/ex1-e7)
-- [f4](/Labs/Lab03/f4/) / [function](https://europe-west6-formal-airway-260.cloudfunctions.net/ex1-E8)
+- [manager]() / [function]()
+- [Dummy01](https://github.zhaw.ch/nguyesyd/SCAD-CLUELESS/blob/master/Labs/Lab03/Dummyfunctions/Dummy01.py) / [function](https://europe-west6-daring-runway-326914.cloudfunctions.net/dummy-function-1)
+- [Dummy02](https://github.zhaw.ch/nguyesyd/SCAD-CLUELESS/blob/master/Labs/Lab03/Dummyfunctions/Dummy02.py) / [function](https://europe-west6-daring-runway-326914.cloudfunctions.net/dummy-function-2)
+- [Dummy03](https://github.zhaw.ch/nguyesyd/SCAD-CLUELESS/blob/master/Labs/Lab03/Dummyfunctions/Dummy03.py/) / [function]()
+- [Dummy04](https://github.zhaw.ch/nguyesyd/SCAD-CLUELESS/blob/master/Labs/Lab03/Dummyfunctions/Dummy04.py) / [function]()
+- [Dummy05](https://github.zhaw.ch/nguyesyd/SCAD-CLUELESS/blob/master/Labs/Lab03/Dummyfunctions/Dummy05.py) / [function]()
+
+### Documentation
+- Dummy01: receives a number, returns a number (fibonacci) 
+- Dummy02: receives a String, returns a String (reverses the String)
+- Dummy03:
+- Dummy04:
+- Dummy05:
 
 
  
