@@ -6,7 +6,7 @@ def hello_world(request):
         d = a*b
         d = d*c
         return "Function 4 has used some multiplication."
-    return ""
+    return {}
 
 #print(hello_world({"hihihihi":"hi"}))
 #print(hello_world({}))
