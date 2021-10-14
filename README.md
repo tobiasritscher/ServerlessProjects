@@ -47,7 +47,7 @@ The dummy functions which are called by the manager are listed below:
 - [f4](/Labs/Lab03/f4/) / [function](https://europe-west6-formal-airway-260.cloudfunctions.net/ex1-E8)
 
 ### Documentation:
- The observation we made from this experiment can be found [here] (/Labs/Lab03/observations/).
+ The observation we made from this experiment can be found [here](https://github.zhaw.ch/nguyesyd/SCAD-CLUELESS/blob/master/Labs/Lab03/observations.txt).
 
 
  
