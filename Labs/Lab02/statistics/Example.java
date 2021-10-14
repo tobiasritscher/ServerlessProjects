@@ -32,11 +32,9 @@ public class Example implements HttpFunction {
 
     @Override
     public void service(HttpRequest request, HttpResponse response) throws IOException {
-        // Check URL parameters for "name" field
-        // "world" is the default value
         String password = request.getFirstQueryParameter("password").orElse("false");
+        var writer = new PrintWriter(response.getWriter());
 
-        // Parse JSON request and check for "name" field
         try {
             JsonElement requestParsed = gson.fromJson(request.getReader(), JsonElement.class);
             JsonObject requestJson = null;
@@ -84,10 +82,9 @@ public class Example implements HttpFunction {
                 counter += count;
             }
 
-
-
-            var writer = new PrintWriter(response.getWriter());
-            writer.printf("Feedback counter: %s %nAvarage Word count: %s %nFeedbacks per hour: %d &nFirst Feedback: %s %nLast Feedback: %s", feedbackCount, avarageWordcount, counter/counterList.size(), keys.first(), keys.last());
+            writer.printf("Feedback counter: %s %nAvarage Word count: %s %nFeedbacks per hour: %f %nFirst Feedback: %s %nLast Feedback: %s", feedbackCount, avarageWordcount, (double)counter/counterList.size(), keys.first(), keys.last());
+        } else {
+            writer.printf("Missing or wrong password ('%s'). please enter the password at the end of the link like '/?password=xxx'", password);
         }
     }
 
