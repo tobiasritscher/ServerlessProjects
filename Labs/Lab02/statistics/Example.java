@@ -87,7 +87,7 @@ public class Example implements HttpFunction {
 
 
             var writer = new PrintWriter(response.getWriter());
-            writer.printf("Feedback counter: %s %nAvarage Word size: %s, %nFeedbacks per hour: %d", WordCount, avarageWordcount, counter/counterList.size());
+            writer.printf("Feedback counter: %s %nAvarage Word count: %s, %nFeedbacks per hour: %d", feedbackCount, avarageWordcount, counter/counterList.size());
         }
     }
 
