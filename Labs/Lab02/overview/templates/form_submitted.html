@@ -3,8 +3,9 @@
 <h1>Success</h1>
 <h2>Text</h2>
 <ol>
-    {% for feedback in feedbacks %}
+        {% for feedback in feedbacks %}
         <li>{{ feedback.date }} <br> {{ feedback.text }}</li>
-    {% endfor %}
+        {% endfor %}
 </ol>
+<a href="https://europe-west6-nomadic-line-328315.cloudfunctions.net/statisticsJava/?password=admin">Analytics</a>
 {% endblock %}
