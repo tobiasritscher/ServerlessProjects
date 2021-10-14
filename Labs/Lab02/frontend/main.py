@@ -19,7 +19,7 @@ class Config:
     CLIENT_CERT_URL     = os.environ.get("CLIENT_CERT_URL", default="")
     DATABASE_COLLECTION = "feedbacks"
 
-    CSRF_SECRET = os.environ.get("CSRF_SECRET", default="")
+    CSRF_SECRET         = os.environ.get("CSRF_SECRET", default="")
     
     @classmethod
     def not_setup(cls):
@@ -84,7 +84,7 @@ def setup_database_conn():
             "auth_uri": "https://accounts.google.com/o/oauth2/auth",
             "token_uri": "https://oauth2.googleapis.com/token",
             "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-            "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-myllf%40feedback-form-6f821.iam.gserviceaccount.com",
+            "client_x509_cert_url": Config.CLIENT_CERT_URL,
         } 
 
         creds = firebase_admin.credentials.Certificate(certs)
