@@ -1,7 +1,11 @@
+import enum
+import random
+import datetime
+
 import flask
 import aiohttp
 import asyncio
-import enum
+
 
 def check_input(work: dict) -> bool:
     contains = ["description", "urls", "names", "ping"]
@@ -18,17 +22,17 @@ class Mapping(enum.Enum):
     TO = enum.auto()
     OR = enum.auto()
     
-    @classmethod
-    def map(cls, s):
+    @staticmethod
+    def map(s):
         m = {
             "|": Mapping.OR,
             "_": Mapping.TO
         }
         return m[s]
 
-    @classmethod
-    def is_two(cls,a) -> bool:
-        return a == Mapping.TO
+    @staticmethod
+    def is_two(a) -> bool:
+        return a != Mapping.TO
 
 def map_description(desc: str):
     out = []
@@ -42,6 +46,10 @@ def map_description(desc: str):
                 return None
             out.append(a)
 
+    # make sure that the first is of type str
+    if not isinstance(out[0], str):
+        return None
+
     return out
 
 class Work:
@@ -49,8 +57,12 @@ class Work:
         self.description = work["description"]
         self.ping = work["ping"]
         self.urls = work["urls"]
-        self.namse = work["names"]
+        self.names = work["names"]
         self.tasks = tasks 
+
+        self.mapping = {}
+        for name, url in zip(self.names, self.urls):
+            self.mapping[name] = url
 
 
 def setup(request: flask.Request):
@@ -77,34 +89,84 @@ def setup(request: flask.Request):
     
     return Work(work, desc)
 
-async def iget(session, url, data):
-    async with session.post(url, json = data) as response:
-        return await response.get_json()
+class Results:
+    def __init__(self, name, url, start, end, status, json):
+        self.start = start
+        self.end = end
+        self.json = json
+        self.name = name
+        self.url = url
+        self.status = status
 
-async def iping(urls):
+    def to_dict(self):
+        return self.__dict__
+
+async def ipost(session, name, url, data):
+    status = None
+    json = None
+    start = datetime.datetime.now()
+    async with session.post(url, json = data) as response:
+        status = response.status
+        json = await response.get_json()
+    end = datetime.datetime.now()
+    return Results(name, url, start, end, status, json)
+
+async def iping(urls, names):
     async with aiohttp.ClientSession() as session:
-        results = await asyncio.gather(*[iget(session, url, {}) for url in urls], return_exceptions=True)
+        work = [ipost(session, name, url, {}) for url, name in zip(urls, names)]
+        results = await asyncio.gather(*work, return_exceptions=True)
         return results
 
 def ping(work):
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(iping(work.urls))
+    return loop.run_until_complete(iping(work.urls, work.names))
 
 async def irun_task(work):
+    results = []
+
+    # reverse
+    tasks = work.desc[::-1]
+
+    # build tree
+    # (f0) -> (f1) -> (f2 | f3) -> (f4)
+
     async with aiohttp.ClientSession() as session:
+        # run first function
+        start = {"start": 1}
+        curr = tasks.pop()
+        
+        res = await ipost(session, curr, work.mapping[curr], start) 
+        results.append(res)
+
         # Run functions
-        starts = {"start": 1}
-        # TODO: run functions
+        while len(tasks) > 0:
+            curr = tasks.pop()
+            task = tasks.pop()
+            if Mapping.is_two(task):
+                # TODO: handle AND
+                second = tasks.pop()
+                curr = [curr, second][random.randint(0, 1)]
+              
+            # get data from previous call
+            prev = results[-1]
+
+            res = await ipost(session, curr, work.mapping[curr], prev) 
+            results.append(res)
+
+    return results
 
 def run_task(work):
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(iping(work.urls))
+    return loop.run_until_complete(irun_task(work))
 
 def start_workflow(work):
+    results = {}
     if work.ping:
-        ping(work) 
+        results["pinged"] = [f.to_dict() for f in ping(work)]
     
-    return run_task(work)
+    results["tasks"] = [f.to_dict() for f in run_task(work)]
+
+    return results
 
 def main(request: flask.Request):
     if request.method == "POST":
