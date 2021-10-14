@@ -23,6 +23,7 @@ To achieve the tasks in this lab, we have created an account on the Google Cloud
 ## [P02:](/Labs/Lab02)
 - [Frontend](/Labs/Lab02/frontend/) / [function](https://europe-west6-formal-airway-260.cloudfunctions.net/ex2-front)
 - [Overview](/Labs/Lab02/overview/) / [function](https://europe-west6-daring-runway-326914.cloudfunctions.net/display-state-info) 
+- [Analytics]() / [function](https://europe-west6-nomadic-line-328315.cloudfunctions.net/statisticsJava/?password=admin) 
   | user  | password |
   |-------|----------|
   | admin | admin    |
