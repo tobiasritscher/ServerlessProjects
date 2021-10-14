@@ -87,7 +87,7 @@ public class Example implements HttpFunction {
 
 
             var writer = new PrintWriter(response.getWriter());
-            writer.printf("Feedback counter: %s %nAvarage Word count: %s, %nFeedbacks per hour: %d", feedbackCount, avarageWordcount, counter/counterList.size());
+            writer.printf("Feedback counter: %s %nAvarage Word count: %s %nFeedbacks per hour: %d &nFirst Feedback: %s %nLast Feedback: %s", feedbackCount, avarageWordcount, counter/counterList.size(), keys.first(), keys.last());
         }
     }
 
@@ -123,11 +123,11 @@ public class Example implements HttpFunction {
     boolean dbIsInitialized = false;
     private Firestore setUpDBConnection() throws IOException {
         if (!dbIsInitialized) {
-        FileInputStream stream = new FileInputStream("key.json");
+            FileInputStream stream = new FileInputStream("key.json");
 
-        FirebaseOptions options = new FirebaseOptions.Builder()
-                .setCredentials(GoogleCredentials.fromStream(stream))
-                .build();
+            FirebaseOptions options = new FirebaseOptions.Builder()
+                    .setCredentials(GoogleCredentials.fromStream(stream))
+                    .build();
 
             FirebaseApp.initializeApp(options);
             dbIsInitialized = true;
