@@ -31,5 +31,5 @@ To achieve the tasks in this lab, we have created an account on the Google Cloud
   
   Our frontend and the overview page (displays all feedbacks) is written in Python and deployed on Google Cloud Functions. 
   Our analytics page is written in Java and is also deployed with Google Cloud Functions.
-  We first intended to chose Amazon Web Services as the provider for the database but then we realised that it wasn't possible to get a free database with them. In the end we settled for a Firebase (Firestore) database since that was free and easy to use. Since both GCF and Firbase is from Google we decided to make the analytics page in Java so that we have a polyglot application.  
+  We first intended to chose Amazon Web Services as the provider for the database but then we realised that it wasn't possible to get a free database with them. In the end we settled for a Firebase (Firestore) database since that was free and easy to use. Since both GCF and Firebase are developed by Google we decided to make the analytics page in Java so that we have a polyglot application.  
  
