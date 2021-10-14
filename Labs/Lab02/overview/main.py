@@ -48,7 +48,9 @@ class FrontendForm(flask_wtf.FlaskForm):
 class Feedback:
     def __init__(self, text, date):
         self.text = text
+        self.date_parsed = datetime.datetime.fromisoformat(date)
         self.date = date
+
 
 def handle_invalid_form(request, form):
     return handle_get(request, form)
@@ -62,6 +64,8 @@ def read_DB():
         text = temp['feedback_text']
         timestamp = temp['timestamp']
         output.append(Feedback(text,timestamp))
+
+    output.sort(key = lambda x: x.date_parsed)
     return output
 
 
