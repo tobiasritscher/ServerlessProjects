@@ -1,6 +1,6 @@
 def hello_world(request): 
     if (request != {}):
-        time.sleep(2)
+        time.sleep(0.2)
         return {"text":"Function 3 has returned nicely after some sleep."}
     return {}
 
