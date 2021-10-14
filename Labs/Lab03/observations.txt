@@ -1,0 +1,8 @@
+Questions:
+
+- How much time was spent on each individual function? 
+- If an error occurs, which function failed and why?
+- Can you provoke a coldstart situation where the pre-warming shows actual effects? 
+- Are conditionally branched functions invoked less? 
+- Is prewarming more helpful with longer sequences? 
+- Did your workflow manager function ever time out?
