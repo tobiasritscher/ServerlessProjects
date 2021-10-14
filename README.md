@@ -27,7 +27,7 @@ To achieve the tasks in this lab, we have created an account on the Google Cloud
   |-------|----------|
   | admin | admin    |
   
- # Documentation:
+ ### Documentation:
   
   Our frontend and the overview page (displays all feedbacks) is written in Python and deployed on Google Cloud Functions. 
   Our analytics page is written in Java and is also deployed with Google Cloud Functions.
