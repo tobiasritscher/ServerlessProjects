@@ -42,15 +42,15 @@ Our workflow manager and the dummy functions are listed below and the observatio
 - [manager]() / [function]()
 - [Dummy01](https://github.zhaw.ch/nguyesyd/SCAD-CLUELESS/blob/master/Labs/Lab03/Dummyfunctions/Dummy01.py) / [function](https://europe-west6-daring-runway-326914.cloudfunctions.net/dummy-function-1)
 - [Dummy02](https://github.zhaw.ch/nguyesyd/SCAD-CLUELESS/blob/master/Labs/Lab03/Dummyfunctions/Dummy02.py) / [function](https://europe-west6-daring-runway-326914.cloudfunctions.net/dummy-function-2)
-- [Dummy03](https://github.zhaw.ch/nguyesyd/SCAD-CLUELESS/blob/master/Labs/Lab03/Dummyfunctions/Dummy03.py/) / [function]()
-- [Dummy04](https://github.zhaw.ch/nguyesyd/SCAD-CLUELESS/blob/master/Labs/Lab03/Dummyfunctions/Dummy04.py) / [function]()
+- [Dummy03](https://github.zhaw.ch/nguyesyd/SCAD-CLUELESS/blob/master/Labs/Lab03/Dummyfunctions/Dummy03.py/) / [function](https://europe-west6-daring-runway-326914.cloudfunctions.net/dummy-function-3)
+- [Dummy04](https://github.zhaw.ch/nguyesyd/SCAD-CLUELESS/blob/master/Labs/Lab03/Dummyfunctions/Dummy04.py) / [function](https://europe-west6-daring-runway-326914.cloudfunctions.net/dummy-function-4)
 - [Dummy05](https://github.zhaw.ch/nguyesyd/SCAD-CLUELESS/blob/master/Labs/Lab03/Dummyfunctions/Dummy05.py) / [function]()
 
 ### Documentation
 - Dummy01: receives a number, returns a number (fibonacci) 
 - Dummy02: receives a String, returns a String (reverses the String)
-- Dummy03:
-- Dummy04:
+- Dummy03: receives a String, returns a String (calls sleep function)
+- Dummy04: receives a String, returns a String (does some multiplication)
 - Dummy05:
 
 
