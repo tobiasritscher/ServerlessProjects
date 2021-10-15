@@ -1,16 +1,19 @@
 def hello_world(request):
   request_json = request.get_json()
   if request.args and '' in request.args:
-    return ''
+    return {}
   elif request_json and 'message' in request_json:
     return dummy(request_json['message'])
   else:
-    return ''
+    return {}
 
 def dummy(nString):
   n = len(nString)**2
+  temp = ''
   for i in range(n):
     print(recur_fibo(i))
+    temp = recur_fibo(i)
+  return {temp}
 
 
 def recur_fibo(n):
@@ -18,5 +21,3 @@ def recur_fibo(n):
     return n
   else:
     return(recur_fibo(n-1) + recur_fibo(n-2))
-
-
