@@ -1,14 +1,12 @@
 def hello_world(request):
   request_json = request.get_json()
-  if request.args and '' in request.args:
-    return ''
-  elif request_json and 'message' in request_json:
-    return dummy(request_json['message'])
-  else:
-    return ''
+  if request_json:
+    return {"function 2":dummy()}
+  return {}
 
-def dummy(nString):
+def dummy():
+  nString="HalliHallo"
   reversedString = ''
   for letter in nString:
-    reversedString = reversedString + letter
+    reversedString = letter + reversedString
   return reversedString
