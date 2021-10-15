@@ -1,5 +1,6 @@
 def hello_world(request): 
-    if (request != {}):
+    request_json = request.get_json()
+    if request_json:
         a = 1
         b = 100
         c = 123
