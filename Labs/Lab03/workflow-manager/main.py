@@ -26,40 +26,45 @@ def check_input(work: dict) -> bool:
     
     return True
 
+class WorkNode:
+    def __init__(self, of_type, *name) -> None:
+        self.of_type = of_type
+        self.names= list(name)
+
 class Mapping(enum.Enum):
+    START = enum.auto()  
+    ATOM = enum.auto()
     TO = enum.auto()
     OR = enum.auto()
-    
+
     @staticmethod
-    def map(s):
-        m = {
+    def map():
+        return {
             "|": Mapping.OR,
-            "_": Mapping.TO,
             "-": Mapping.TO
         }
-        return m[s]
 
     @staticmethod
     def is_two(a) -> bool:
         return a != Mapping.TO
 
-def map_description(desc: str):
-    out = []
-    starts = 0 
+class Description:
+    @staticmethod
+    def _to_block(block):
+        # TODO: handle AND
+        if "|" not in block:
+            return WorkNode(Mapping.ATOM, block)
+        return WorkNode(Mapping.OR, *block.split("|"))
 
-    for i, c in enumerate(desc):
-        if c in ("|", "-"):
-            out.append(desc[starts:i])
-            a = Mapping.map(c)
-            if a is None:
-                return None
-            out.append(a)
+    @staticmethod
+    def get(desc: str):
+        blocks = [i.strip() for i in desc.split("-")]
 
-    # make sure that the first is of type str
-    if not isinstance(out[0], str):
-        return None
+        # check for invalid states
+        if len(blocks) == 0 or blocks[0] == "" or blocks[0] in Mapping.map():
+            return None
 
-    return out
+        return [Description._to_block(block) for block in blocks]
 
 class Work:
     def __init__(self, work, tasks):
@@ -72,8 +77,7 @@ class Work:
         self.mapping = {}
         for name, url in zip(self.names, self.urls):
             self.mapping[name] = url
-
-
+    
 def setup(request: flask.Request):
     # get json
     work = request.get_json()
@@ -94,7 +98,7 @@ def setup(request: flask.Request):
         log.info("work is invalid")
         return None 
 
-    desc = map_description(work["description"])
+    desc = Description.get(work["description"])
     if not desc:
         return None
     
@@ -115,19 +119,19 @@ class Results:
 async def ipost(session, name, url, data):
     status = None
     json = None
-    log.debug("pinging %s", name)
+    log.debug("calling %s", name)
     start = datetime.datetime.now()
     async with session.post(url, json = data) as response:
         status = response.status
-        json = await response.get_json()
+        json = await response.json()
     end = datetime.datetime.now()
     log.debug("status %d while pinging %s", status, name)
-    return Results(name, url, start, end, status, json)
+    return Results(name, url, start.isoformat(), end.isoformat(), status, json)
 
 async def iping(urls, names):
     async with aiohttp.ClientSession() as session:
         work = [ipost(session, name, url, {}) for url, name in zip(urls, names)]
-        results = await asyncio.gather(*work, return_exceptions=True)
+        results = await asyncio.gather(*work, return_exceptions=False)
         return results
 
 def ping(work):
@@ -146,24 +150,23 @@ async def irun_task(work):
     async with aiohttp.ClientSession() as session:
         # run first function
         start = {"start": 1}
-        curr = tasks.pop()
+        task = tasks.pop()
+        name = task.names[0]
         
-        res = await ipost(session, curr, work.mapping[curr], start) 
+        res = await ipost(session, name, work.mapping[name], start) 
         results.append(res)
 
         # Run functions
         while len(tasks) > 0:
-            curr = tasks.pop()
             task = tasks.pop()
-            if Mapping.is_two(task):
+            if Mapping.is_two(task.of_type):
                 # TODO: handle AND
-                second = tasks.pop()
-                curr = [curr, second][random.randint(0, 1)]
+                name = task.names[random.randint(0, len(task.names))]
               
             # get data from previous call
             prev = results[-1]
 
-            res = await ipost(session, curr, work.mapping[curr], prev) 
+            res = await ipost(session, name, work.mapping[name], prev.to_dict()) 
             results.append(res)
 
     return results
@@ -176,11 +179,12 @@ async def irun_workflow(work):
     nest_asyncio.apply()
     log.info("starting workflow")
     results = {}
+
     if work.ping:
         log.info("pinging")
         results["pinged"] = [f.to_dict() for f in ping(work)]
-    
-    results["tasks"] = [f.to_dict() for f in run_task(work)]
+    else:
+        results["tasks"] = [f.to_dict() for f in run_task(work)]
 
     return results
 
