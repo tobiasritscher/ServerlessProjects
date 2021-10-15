@@ -27,21 +27,25 @@ def check_input(work: dict) -> bool:
     return True
 
 class WorkNode:
-    def __init__(self, of_type, *name) -> None:
+    def __init__(self, of_type, fullname, *name) -> None:
         self.of_type = of_type
-        self.names= list(name)
+        self.fullname = fullname
+        self.names = name
+
 
 class Mapping(enum.Enum):
     START = enum.auto()  
     ATOM = enum.auto()
     TO = enum.auto()
     OR = enum.auto()
+    AND = enum.auto()
 
     @staticmethod
     def map():
         return {
             "|": Mapping.OR,
-            "-": Mapping.TO
+            "-": Mapping.TO,
+            "&": Mapping.AND
         }
 
     @staticmethod
@@ -51,10 +55,13 @@ class Mapping(enum.Enum):
 class Description:
     @staticmethod
     def _to_block(block):
-        # TODO: handle AND
-        if "|" not in block:
-            return WorkNode(Mapping.ATOM, block)
-        return WorkNode(Mapping.OR, *block.split("|"))
+        oor = "|" in block 
+        oand = "&" in block
+        if not oor and not oand:
+            return WorkNode(Mapping.ATOM, block, block)
+        if oor:
+            return WorkNode(Mapping.OR, block, *block.split("|"))
+        return WorkNode(Mapping.AND, block, *block.split("&"))
 
     @staticmethod
     def get(desc: str):
@@ -77,6 +84,7 @@ class Work:
         self.mapping = {}
         for name, url in zip(self.names, self.urls):
             self.mapping[name] = url
+
     
 def setup(request: flask.Request):
     # get json
@@ -110,11 +118,14 @@ class Results:
         self.end = end
         self.json = json
         self.name = name
-        self.url = url
+        self.urls = url
         self.status = status
 
     def to_dict(self):
-        return self.__dict__
+        res = self.__dict__
+        res["start"] = res["start"].isoformat()
+        res["end"] = res["end"].isoformat()
+        return res
 
 async def ipost(session, name, url, data):
     status = None
@@ -126,7 +137,7 @@ async def ipost(session, name, url, data):
         json = await response.json()
     end = datetime.datetime.now()
     log.debug("status %d while pinging %s", status, name)
-    return Results(name, url, start.isoformat(), end.isoformat(), status, json)
+    return Results(name, [url], start, end, status, json)
 
 async def iping(urls, names):
     async with aiohttp.ClientSession() as session:
@@ -137,6 +148,29 @@ async def iping(urls, names):
 def ping(work):
     loop = asyncio.get_running_loop()
     return loop.run_until_complete(iping(work.urls, work.names))
+
+async def op_and(session, work, task, prev):
+    names = task.names
+    log.info("%s", task.names)
+    todo = [ipost(session, name, work.mapping[name], prev.json) for name in names]
+    start = datetime.datetime.now()
+    raw_results = await asyncio.gather(*todo, return_exceptions=False)
+    end = datetime.datetime.now()
+    d = {}
+    for s in raw_results:
+        d.update(s.json)
+
+    url = [work.mapping[name] for name in names]
+    return Results(task.fullname, url, start, end, 200, d) 
+
+async def op_or(session, work, task, prev):
+    name = task.names[random.randint(0, len(task.names)) - 1]
+    name = task.names[0]
+    return await ipost(session, name, work.mapping[name], prev.json)
+
+async def op_to(session, work, task, prev):
+    name = task.names[0]
+    return await ipost(session, name, work.mapping[name], prev.json)
 
 async def irun_task(work):
     results = []
@@ -151,6 +185,7 @@ async def irun_task(work):
         # run first function
         start = {"start": 1}
         task = tasks.pop()
+        log.info("is of type %s", type(task))
         name = task.names[0]
         
         res = await ipost(session, name, work.mapping[name], start) 
@@ -159,15 +194,19 @@ async def irun_task(work):
         # Run functions
         while len(tasks) > 0:
             task = tasks.pop()
-            if Mapping.is_two(task.of_type):
-                # TODO: handle AND
-                name = task.names[random.randint(0, len(task.names)) - 1]
-              
             # get data from previous call
             prev = results[-1]
+            
+            res = None
 
-            res = await ipost(session, name, work.mapping[name], prev.json) 
-            results.append(res)
+            if task.of_type == Mapping.OR:
+                res = op_or(session, work, task, prev)
+            elif task.of_type == Mapping.AND:
+                res = op_and(session, work, task, prev)
+            else:
+                res = op_to(session, work, task, prev)
+              
+            results.append(await res)
 
     return results
 
