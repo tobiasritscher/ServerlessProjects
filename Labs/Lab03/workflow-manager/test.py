@@ -1,4 +1,5 @@
 import requests
+import pprint
 
 template = {
       "description": "f0-f1-f2|f3-f4",
@@ -18,14 +19,16 @@ template = {
           "f4", 
       ]
 }
-other = "http://192.168.0.243:8080/" 
+other = "http://172.22.224.36:8080/" 
 
 def main():
     print("online making request")
     r = requests.post(other, json=template) 
     print("got request")
     print(r.status_code)
-    print(r.json())
+    data = r.json()
+    pp = pprint.PrettyPrinter()
+    pp.pprint(data)
 
 
 if __name__ == "__main__":

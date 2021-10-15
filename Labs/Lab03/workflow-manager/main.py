@@ -161,12 +161,12 @@ async def irun_task(work):
             task = tasks.pop()
             if Mapping.is_two(task.of_type):
                 # TODO: handle AND
-                name = task.names[random.randint(0, len(task.names))]
+                name = task.names[random.randint(0, len(task.names)) - 1]
               
             # get data from previous call
             prev = results[-1]
 
-            res = await ipost(session, name, work.mapping[name], prev.to_dict()) 
+            res = await ipost(session, name, work.mapping[name], prev.json) 
             results.append(res)
 
     return results
