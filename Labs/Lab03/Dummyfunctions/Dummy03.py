@@ -1,3 +1,5 @@
+import time
+
 def hello_world(request): 
     if (request != {}):
         time.sleep(0.2)
