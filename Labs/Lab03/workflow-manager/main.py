@@ -2,18 +2,26 @@ import enum
 import random
 import datetime
 
+import nest_asyncio
 import flask
+import logging
 import aiohttp
 import asyncio
 
+logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
 
 def check_input(work: dict) -> bool:
     contains = ["description", "urls", "names", "ping"]
 
     for c in contains:
         if c not in work:
+            log.debug("missing field %s", c)
             return False
+
     if len(work["urls"]) != len(work["names"]):
+        log.debug("lenght of workloads is different urls: %d - names: %d", len(work["urls"]), len(work["names"]))
         return False
     
     return True
@@ -26,7 +34,8 @@ class Mapping(enum.Enum):
     def map(s):
         m = {
             "|": Mapping.OR,
-            "_": Mapping.TO
+            "_": Mapping.TO,
+            "-": Mapping.TO
         }
         return m[s]
 
@@ -69,6 +78,7 @@ def setup(request: flask.Request):
     # get json
     work = request.get_json()
     if work is None:
+        log.info("work is None")
         return None 
 
     # json 
@@ -81,6 +91,7 @@ def setup(request: flask.Request):
 
     # check input 
     if not check_input(work):
+        log.info("work is invalid")
         return None 
 
     desc = map_description(work["description"])
@@ -104,11 +115,13 @@ class Results:
 async def ipost(session, name, url, data):
     status = None
     json = None
+    log.debug("pinging %s", name)
     start = datetime.datetime.now()
     async with session.post(url, json = data) as response:
         status = response.status
         json = await response.get_json()
     end = datetime.datetime.now()
+    log.debug("status %d while pinging %s", status, name)
     return Results(name, url, start, end, status, json)
 
 async def iping(urls, names):
@@ -118,14 +131,14 @@ async def iping(urls, names):
         return results
 
 def ping(work):
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
     return loop.run_until_complete(iping(work.urls, work.names))
 
 async def irun_task(work):
     results = []
 
     # reverse
-    tasks = work.desc[::-1]
+    tasks = work.tasks[::-1]
 
     # build tree
     # (f0) -> (f1) -> (f2 | f3) -> (f4)
@@ -156,21 +169,31 @@ async def irun_task(work):
     return results
 
 def run_task(work):
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
     return loop.run_until_complete(irun_task(work))
 
-def start_workflow(work):
+async def irun_workflow(work):
+    nest_asyncio.apply()
+    log.info("starting workflow")
     results = {}
     if work.ping:
+        log.info("pinging")
         results["pinged"] = [f.to_dict() for f in ping(work)]
     
     results["tasks"] = [f.to_dict() for f in run_task(work)]
 
     return results
 
+
+def start_workflow(work):
+    return asyncio.run(irun_workflow(work))
+
 def main(request: flask.Request):
+    log.debug("running request type %s", request.method)
     if request.method == "POST":
+        log.info("Got POST request")
         if out := setup(request):
             return start_workflow(out)
+        log.info("invalid json")
 
     flask.abort(405)

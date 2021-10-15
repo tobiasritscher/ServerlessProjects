@@ -1,5 +1,6 @@
 # Function dependencies, for example:
 # package>=version
 aiohttp==3.7.4.post0
+nest-asyncio==1.5.1
 
 
