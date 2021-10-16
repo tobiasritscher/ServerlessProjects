@@ -145,8 +145,7 @@ async def iping(urls, names):
         results = await asyncio.gather(*work, return_exceptions=False)
         return results
 
-def ping(work):
-    loop = asyncio.get_running_loop()
+async def ping(work, loop):
     return loop.run_until_complete(iping(work.urls, work.names))
 
 async def op_and(session, work, task, prev):
@@ -175,29 +174,13 @@ async def op_to(session, work, task, prev):
 async def irun_task(work):
     results = []
 
-    # reverse
-    tasks = work.tasks[::-1]
-
-    # build tree
-    # (f0) -> (f1) -> (f2 | f3) -> (f4)
+    results.append(Results(None, None, None, None, None, {"start": 1}))
 
     async with aiohttp.ClientSession() as session:
-        # run first function
-        start = {"start": 1}
-        task = tasks.pop()
-        log.info("is of type %s", type(task))
-        name = task.names[0]
-        
-        res = await ipost(session, name, work.mapping[name], start) 
-        results.append(res)
-
         # Run functions
-        while len(tasks) > 0:
-            task = tasks.pop()
+        for task in work.tasks:
             # get data from previous call
             prev = results[-1]
-            
-            res = None
 
             if task.of_type == Mapping.OR:
                 res = op_or(session, work, task, prev)
@@ -208,22 +191,25 @@ async def irun_task(work):
               
             results.append(await res)
 
-    return results
+    # slice results to remove the unneeded "first" prev 
+    return results[1:]
 
-def run_task(work):
-    loop = asyncio.get_running_loop()
+async def run_task(work, loop):
     return loop.run_until_complete(irun_task(work))
 
 async def irun_workflow(work):
+    # make sure that the event loop can run
     nest_asyncio.apply()
+    loop = asyncio.get_running_loop()
+
     log.info("starting workflow")
     results = {}
 
     if work.ping:
         log.info("pinging")
-        results["pinged"] = [f.to_dict() for f in ping(work)]
-    else:
-        results["tasks"] = [f.to_dict() for f in run_task(work)]
+        results["pinged"] = [f.to_dict() for f in await ping(work, loop)]
+
+    results["tasks"] = [f.to_dict() for f in await run_task(work, loop)]
 
     return results
 

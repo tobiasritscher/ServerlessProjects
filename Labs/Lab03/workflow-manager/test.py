@@ -4,7 +4,7 @@ import pprint
 
 template_or = {
       "description": "f0-f1-f2|f3-f4",
-      "ping": False,
+      "ping": True,
       "urls":  [
           "https://europe-west6-daring-runway-326914.cloudfunctions.net/dummy-function-0", 
           "https://europe-west6-daring-runway-326914.cloudfunctions.net/dummy-function-1",
@@ -40,7 +40,7 @@ template_and = {
       ]
 }
 
-template = template_and
+template = template_or
 other = "http://172.22.224.36:8080/" 
 
 def main():
