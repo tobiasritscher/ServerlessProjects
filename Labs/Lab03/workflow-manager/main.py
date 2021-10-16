@@ -1,12 +1,11 @@
 import enum
 import random
 import datetime
+import asyncio
 
-import nest_asyncio
 import flask
 import logging
 import aiohttp
-import asyncio
 
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 log = logging.getLogger(__name__)
@@ -127,7 +126,7 @@ class Results:
         res["end"] = res["end"].isoformat()
         return res
 
-async def ipost(session, name, url, data):
+async def ipost(session, name, url, data, is_type = "POST"):
     status = None
     json = None
     log.debug("calling %s", name)
@@ -136,17 +135,17 @@ async def ipost(session, name, url, data):
         status = response.status
         json = await response.json()
     end = datetime.datetime.now()
-    log.debug("status %d while pinging %s", status, name)
+    log.debug("status %d while %s to %s", status, is_type, name)
     return Results(name, [url], start, end, status, json)
 
 async def iping(urls, names):
     async with aiohttp.ClientSession() as session:
-        work = [ipost(session, name, url, {}) for url, name in zip(urls, names)]
+        work = [ipost(session, name, url, {}, "PING") for url, name in zip(urls, names)]
         results = await asyncio.gather(*work, return_exceptions=False)
         return results
 
-async def ping(work, loop):
-    return loop.run_until_complete(iping(work.urls, work.names))
+async def ping(work):
+    return await iping(work.urls, work.names)
 
 async def op_and(session, work, task, prev):
     names = task.names
@@ -194,22 +193,18 @@ async def irun_task(work):
     # slice results to remove the unneeded "first" prev 
     return results[1:]
 
-async def run_task(work, loop):
-    return loop.run_until_complete(irun_task(work))
+async def run_task(work):
+    return await irun_task(work)
 
 async def irun_workflow(work):
-    # make sure that the event loop can run
-    nest_asyncio.apply()
-    loop = asyncio.get_running_loop()
-
     log.info("starting workflow")
     results = {}
 
     if work.ping:
         log.info("pinging")
-        results["pinged"] = [f.to_dict() for f in await ping(work, loop)]
+        results["pinged"] = [f.to_dict() for f in await ping(work)]
 
-    results["tasks"] = [f.to_dict() for f in await run_task(work, loop)]
+    results["tasks"] = [f.to_dict() for f in await run_task(work)]
 
     return results
 
