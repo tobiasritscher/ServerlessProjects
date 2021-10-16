@@ -25,7 +25,7 @@ def check_input(work: dict) -> bool:
     
     return True
 
-class WorkNode:
+class TaskNode:
     def __init__(self, of_type, fullname, *name) -> None:
         self.of_type = of_type
         self.fullname = fullname
@@ -57,18 +57,24 @@ class Description:
         oor = "|" in block 
         oand = "&" in block
         if not oor and not oand:
-            return WorkNode(Mapping.ATOM, block, block)
+            return TaskNode(Mapping.ATOM, block, block)
         if oor:
-            return WorkNode(Mapping.OR, block, *block.split("|"))
-        return WorkNode(Mapping.AND, block, *block.split("&"))
+            return TaskNode(Mapping.OR, block, *block.split("|"))
+        return TaskNode(Mapping.AND, block, *block.split("&"))
 
     @staticmethod
     def get(desc: str):
         blocks = [i.strip() for i in desc.split("-")]
 
         # check for invalid states
-        if len(blocks) == 0 or blocks[0] == "" or blocks[0] in Mapping.map():
+        if len(blocks) == 0 or blocks[0] == "":
             return None
+        
+        # check that no task starts or ends with an operator
+        for block in blocks:
+            for pos in [0, -1]:
+                if block[pos] in Mapping.map():
+                    return None
 
         return [Description._to_block(block) for block in blocks]
 
@@ -126,10 +132,10 @@ class Results:
         res["end"] = res["end"].isoformat()
         return res
 
-async def ipost(session, name, url, data, is_type = "POST"):
+async def post(session, name, url, data, is_type = "POST"):
     status = None
     json = None
-    log.debug("calling %s", name)
+    log.debug("calling %s while %s", name, is_type)
     start = datetime.datetime.now()
     async with session.post(url, json = data) as response:
         status = response.status
@@ -138,19 +144,16 @@ async def ipost(session, name, url, data, is_type = "POST"):
     log.debug("status %d while %s to %s", status, is_type, name)
     return Results(name, [url], start, end, status, json)
 
-async def iping(urls, names):
-    async with aiohttp.ClientSession() as session:
-        work = [ipost(session, name, url, {}, "PING") for url, name in zip(urls, names)]
-        results = await asyncio.gather(*work, return_exceptions=False)
-        return results
-
 async def ping(work):
-    return await iping(work.urls, work.names)
+    async with aiohttp.ClientSession() as session:
+        load = [post(session, name, url, {}, "PING") for url, name in zip(work.urls, work.names)]
+        results = await asyncio.gather(*load, return_exceptions=False)
+        return results
 
 async def op_and(session, work, task, prev):
     names = task.names
     log.info("%s", task.names)
-    todo = [ipost(session, name, work.mapping[name], prev.json) for name in names]
+    todo = [post(session, name, work.mapping[name], prev.json) for name in names]
     start = datetime.datetime.now()
     raw_results = await asyncio.gather(*todo, return_exceptions=False)
     end = datetime.datetime.now()
@@ -163,14 +166,13 @@ async def op_and(session, work, task, prev):
 
 async def op_or(session, work, task, prev):
     name = task.names[random.randint(0, len(task.names)) - 1]
-    name = task.names[0]
-    return await ipost(session, name, work.mapping[name], prev.json)
+    return await post(session, name, work.mapping[name], prev.json)
 
 async def op_to(session, work, task, prev):
     name = task.names[0]
-    return await ipost(session, name, work.mapping[name], prev.json)
+    return await post(session, name, work.mapping[name], prev.json)
 
-async def irun_task(work):
+async def run_task(work):
     results = []
 
     results.append(Results(None, None, None, None, None, {"start": 1}))
@@ -193,10 +195,7 @@ async def irun_task(work):
     # slice results to remove the unneeded "first" prev 
     return results[1:]
 
-async def run_task(work):
-    return await irun_task(work)
-
-async def irun_workflow(work):
+async def run_workflow(work):
     log.info("starting workflow")
     results = {}
 
@@ -208,9 +207,8 @@ async def irun_workflow(work):
 
     return results
 
-
 def start_workflow(work):
-    return asyncio.run(irun_workflow(work))
+    return asyncio.run(run_workflow(work))
 
 def main(request: flask.Request):
     log.debug("running request type %s", request.method)
