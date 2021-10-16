@@ -39,7 +39,8 @@ To achieve the tasks in this lab, we have created an account on the Google Cloud
   
 ## [P03:](/Labs/Lab03)
 Our workflow manager and the dummy functions are listed below and the observations we have made are [here](https://github.zhaw.ch/nguyesyd/SCAD-CLUELESS/blob/master/Labs/Lab03/observations.txt)
-- [manager](/Labs/Lab03/workflow-manager) / [function]()
+
+- [Manager](/Labs/Lab03/workflow-manager) / [function](https://europe-west6-formal-airway-260.cloudfunctions.net/ex3-manager)
 - [Dummy00](/Labs/Lab03/Dummyfunctions/Dummy00.py) / [function](https://europe-west6-daring-runway-326914.cloudfunctions.net/dummy-function-0)
 - [Dummy01](/Labs/Lab03/Dummyfunctions/Dummy01.py) / [function](https://europe-west6-daring-runway-326914.cloudfunctions.net/dummy-function-1)
 - [Dummy02](/Labs/Lab03/Dummyfunctions/Dummy02.py) / [function](https://europe-west6-daring-runway-326914.cloudfunctions.net/dummy-function-2)
@@ -47,6 +48,7 @@ Our workflow manager and the dummy functions are listed below and the observatio
 - [Dummy04](/Labs/Lab03/Dummyfunctions/Dummy04.py) / [function](https://europe-west6-daring-runway-326914.cloudfunctions.net/dummy-function-4)
 
 ### Documentation
+- Manager: receives a json directory with fields such as shown below
 - Dummy00: receives a String, returns a String (calls sleep function)
 - Dummy01: receives a number, returns a number (fibonacci) 
 - Dummy02: receives a String, returns a String (reverses the String)
@@ -54,6 +56,7 @@ Our workflow manager and the dummy functions are listed below and the observatio
 - Dummy04: receives a String, returns a String (does some multiplication)
 
 ### Example
+
 ```python
 template_or = {
       "description": "f0-f1-f2|f3-f4",
