@@ -22,7 +22,7 @@ def check_input(work: dict) -> bool:
     if len(work["urls"]) != len(work["names"]):
         log.debug("lenght of workloads is different urls: %d - names: %d", len(work["urls"]), len(work["names"]))
         return False
-    
+
     return True
 
 class TaskNode:
@@ -33,7 +33,7 @@ class TaskNode:
 
 
 class Mapping(enum.Enum):
-    START = enum.auto()  
+    START = enum.auto()
     ATOM = enum.auto()
     TO = enum.auto()
     OR = enum.auto()
@@ -42,10 +42,10 @@ class Mapping(enum.Enum):
     @staticmethod
     def map():
         return {
-            "|": Mapping.OR,
-            "-": Mapping.TO,
-            "&": Mapping.AND
-        }
+                "|": Mapping.OR,
+                "-": Mapping.TO,
+                "&": Mapping.AND
+                }
 
     @staticmethod
     def is_two(a) -> bool:
@@ -54,7 +54,7 @@ class Mapping(enum.Enum):
 class Description:
     @staticmethod
     def _to_block(block):
-        oor = "|" in block 
+        oor = "|" in block
         oand = "&" in block
         if not oor and not oand:
             return TaskNode(Mapping.ATOM, block, block)
@@ -69,7 +69,7 @@ class Description:
         # check for invalid states
         if len(blocks) == 0 or blocks[0] == "":
             return None
-        
+
         # check that no task starts or ends with an operator
         for block in blocks:
             for pos in [0, -1]:
@@ -84,21 +84,21 @@ class Work:
         self.ping = work["ping"]
         self.urls = work["urls"]
         self.names = work["names"]
-        self.tasks = tasks 
+        self.tasks = tasks
 
         self.mapping = {}
         for name, url in zip(self.names, self.urls):
             self.mapping[name] = url
 
-    
+
 def setup(request: flask.Request):
     # get json
     work = request.get_json()
     if work is None:
         log.info("work is None")
-        return None 
+        return None
 
-    # json 
+    # json
     # {
     #   "description": "f0-f1-f2|f3-f4",
     #   "ping": False,
@@ -106,15 +106,15 @@ def setup(request: flask.Request):
     #   "names": []
     # }
 
-    # check input 
+    # check input
     if not check_input(work):
         log.info("work is invalid")
-        return None 
+        return None
 
     desc = Description.get(work["description"])
     if not desc:
         return None
-    
+
     return Work(work, desc)
 
 class Results:
@@ -162,10 +162,10 @@ async def op_and(session, work, task, prev):
         d.update(s.json)
 
     url = [work.mapping[name] for name in names]
-    return Results(task.fullname, url, start, end, 200, d) 
+    return Results(task.fullname, url, start, end, 200, d)
 
 async def op_or(session, work, task, prev):
-    name = task.names[random.randint(0, len(task.names)) - 1]
+    name = task.names[random.randint(0, len(task.names) - 1)]
     return await post(session, name, work.mapping[name], prev.json)
 
 async def op_to(session, work, task, prev):
@@ -189,10 +189,10 @@ async def run_task(work):
                 res = op_and(session, work, task, prev)
             else:
                 res = op_to(session, work, task, prev)
-              
+
             results.append(await res)
 
-    # slice results to remove the unneeded "first" prev 
+    # slice results to remove the unneeded "first" prev
     return results[1:]
 
 async def run_workflow(work):
