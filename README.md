@@ -38,7 +38,7 @@ To achieve the tasks in this lab, we have created an account on the Google Cloud
   
   
 ## [P03:](/Labs/Lab03)
-Our workflow manager and the dummy functions are listed below and the observations we have made are [here](https://github.zhaw.ch/nguyesyd/SCAD-CLUELESS/blob/master/Labs/Lab03/observations.txt)
+Our workflow manager and the dummy functions are listed below and the observations we have made are [here](https://github.zhaw.ch/nguyesyd/SCAD-CLUELESS/blob/master/Labs/Lab03/observation.md)
 
 - [Manager](/Labs/Lab03/workflow-manager) / [function](https://europe-west6-formal-airway-260.cloudfunctions.net/ex3-manager)
 - [Dummy00](/Labs/Lab03/Dummyfunctions/Dummy00.py) / [function](https://europe-west6-daring-runway-326914.cloudfunctions.net/dummy-function-0)
