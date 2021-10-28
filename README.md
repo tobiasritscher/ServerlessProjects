@@ -154,3 +154,6 @@ result = {'tasks': [{'end': '2021-10-16T00:32:20.149437',
  
  
 ## [P04:](/Labs/Lab04)
+
+### R8:
+We put OpenFaas on a [raspberry pie](https://faas.ritscher.ch) and used a selfhosted [docker registry](https://dockerhub.ritscher.ch) to deploy the docker container with the cloud function.
