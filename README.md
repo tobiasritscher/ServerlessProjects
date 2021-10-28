@@ -156,7 +156,7 @@ result = {'tasks': [{'end': '2021-10-16T00:32:20.149437',
 ## [P04:](/Labs/Lab04)
 
 ### R2:
-Created a basic workflow with [Google Cloud Workflows](https://cloud.google.com/workflows). The first step in the Workflow is to call the ping function, then Frontend, Overview and Analytics.
+Created a basic [workflow](https://github.zhaw.ch/nguyesyd/SCAD-CLUELESS/tree/master/Labs/Lab04/workflow) with [Google Cloud Workflows](https://cloud.google.com/workflows). The first step in the Workflow is to call the ping function, then Frontend, Overview and Analytics.
 
 This is the output after calling the workflow:
 
