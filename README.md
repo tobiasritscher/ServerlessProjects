@@ -155,5 +155,8 @@ result = {'tasks': [{'end': '2021-10-16T00:32:20.149437',
  
 ## [P04:](/Labs/Lab04)
 
+### R6:
+This enables warm-up pinging which we need for self-optimization. [Cloud function](https://europe-west6-mesmerizing-app-326913.cloudfunctions.net/r6)
+
 ### R8:
 We put OpenFaas on a [raspberry pie](https://faas.ritscher.ch) and used a selfhosted [docker registry](https://dockerhub.ritscher.ch) to deploy the docker container with the cloud function.
