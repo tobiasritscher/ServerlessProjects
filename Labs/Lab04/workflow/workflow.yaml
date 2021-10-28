@@ -1,0 +1,15 @@
+- frontend:
+    call: http.post
+    args:
+        url: https://europe-west6-formal-airway-260.cloudfunctions.net/ex2-front
+    result: frontend_result
+- overview:
+    call: http.post
+    args:
+        url: https://europe-west6-daring-runway-326914.cloudfunctions.net/display-state-info
+    result: overview_result
+- analytics:
+    call: http.post
+    args:
+        url: https://europe-west6-nomadic-line-328315.cloudfunctions.net/statisticsJava/?password=admin
+    result: analytics_result
