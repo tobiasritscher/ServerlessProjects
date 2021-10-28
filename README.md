@@ -155,6 +155,22 @@ result = {'tasks': [{'end': '2021-10-16T00:32:20.149437',
  
 ## [P04:](/Labs/Lab04)
 
+### R2:
+Created a basic workflow with [Google Cloud Workflows](https://cloud.google.com/workflows). The first step in the Workflow is to call the ping function, then Frontend, Overview and Analytics.
+
+This is the output after calling the workflow:
+
+```
+Waiting for execution [d7d92380-2d6d-4a4f-8a34-bc10ff566f44] to complete...done.     
+argument: 'null'
+endTime: '2021-10-28T15:07:32.048832311Z'
+name: projects/192660774501/locations/us-central1/workflows/workflow-sa/executions/d7d92380-2d6d-4a4f-8a34-bc10ff566f44
+result: 'null'
+startTime: '2021-10-28T15:07:26.908865616Z'
+state: SUCCEEDED
+workflowRevisionId: 000001-ac2
+```
+
 ### R6:
 This enables warm-up pinging which we need for self-optimization. [Cloud function](https://europe-west6-mesmerizing-app-326913.cloudfunctions.net/r6)
 
