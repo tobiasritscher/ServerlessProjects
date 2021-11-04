@@ -172,8 +172,11 @@ workflowRevisionId: 000001-ac2
 ```
 
 ### R6:
-This enables warm-up pinging which we need for self-optimization. [Cloud function](https://europe-west6-mesmerizing-app-326913.cloudfunctions.net/r6)
+This [cloud function](https://europe-west6-mesmerizing-app-326913.cloudfunctions.net/r6) enables warm-up pinging which we need for self-optimization. 
 
+### R7:
+This [function](https://europe-west6-formal-airway-260.cloudfunctions.net/ex4-trigger) is a content trigger
+ 
 ### R8:
 We put OpenFaas on a [raspberry pie](https://faas.ritscher.ch) and used a selfhosted [docker registry](https://dockerhub.ritscher.ch) to deploy the docker container with the cloud function.
 
