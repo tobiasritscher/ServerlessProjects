@@ -171,7 +171,7 @@ state: SUCCEEDED
 workflowRevisionId: 000001-ac2
 ```
 ### R5:
-We tried to implement a function through faasification of python native code, that detects the language of a given feedback. Unfortunately the faasification tool Lambada had an bug and was unable to deploy the function to GCF. You can find the function and the Error message [here]().
+We tried to implement a function through faasification of python native code, that detects the language of a given feedback. Unfortunately the faasification tool Lambada had an bug and was unable to deploy the function to GCF. Here you can find the [function](https://github.zhaw.ch/nguyesyd/SCAD-CLUELESS/blob/master/Labs/Lab05/E5_Code.py) and the [error message](https://github.zhaw.ch/nguyesyd/SCAD-CLUELESS/blob/master/Labs/Lab05/R5_Errortext).
 
 ### R6:
 This [cloud function](https://europe-west6-mesmerizing-app-326913.cloudfunctions.net/r6) enables warm-up pinging which we need for self-optimization. 
