@@ -1,0 +1,37 @@
+PS C:\Users\jarre\VS Code Projects\Faasification\lambada> python lambada --provider=google --debug test.py
+ »» Lambada: track module: test
+ »» Lambada: move fib
+'tail' is not recognized as an internal or external command,
+operable program or batch file.
+Exception: object of type 'Constant' has no len()
+Traceback (most recent call last):
+  File "C:\Users\jarre\VS Code Projects\Faasification\lambada\lambadalib\cmdline.py", line 35, in execute
+    lambada.move(loadedmodule.__dict__, local=args.local, module=filename, debug=args.debug, annotations=args.annotations, cloudprovider=args.provider, cloudproviderargs={"endpoint": args.endpoint})
+  File "C:\Users\jarre\VS Code Projects\Faasification\lambada\lambadalib\lambadanew.py", line 249, in move
+    filledtemplate = moveinternal(moveglobals, function, args, bodies.get(function, []), local, imports, dependencies, tainted, features, debug, globalvars, cloudfunctionconfigs.get(function, None), provider)
+  File "C:\Users\jarre\VS Code Projects\Faasification\lambada\lambadalib\lambadanew.py", line 78, in moveinternal      
+    gencode = "\n".join(map(lambda node: "\n".join(["\t" + x for x in codegen.to_source(node, indent_with="\t").split("\n")]), body))
+  File "C:\Users\jarre\VS Code Projects\Faasification\lambada\lambadalib\lambadanew.py", line 78, in <lambda>
+    gencode = "\n".join(map(lambda node: "\n".join(["\t" + x for x in codegen.to_source(node, indent_with="\t").split("\n")]), body))
+  File "C:\Users\jarre\VS Code Projects\Faasification\lambada\lambadalib\codegen\code_gen.py", line 51, in to_source    
+    generator.visit(node)
+  File "C:\Users\jarre\VS Code Projects\Faasification\lambada\lambadalib\codegen\node_util.py", line 131, in visit      
+    return visitor(node)
+  File "C:\Users\jarre\VS Code Projects\Faasification\lambada\lambadalib\codegen\code_gen.py", line 357, in visit_If    
+    self.body(node.body)
+  File "C:\Users\jarre\VS Code Projects\Faasification\lambada\lambadalib\codegen\code_gen.py", line 212, in body        
+    self.write(*statements)
+  File "C:\Users\jarre\VS Code Projects\Faasification\lambada\lambadalib\codegen\code_gen.py", line 164, in write      
+    visit(item)
+  File "C:\Users\jarre\VS Code Projects\Faasification\lambada\lambadalib\codegen\node_util.py", line 131, in visit      
+    return visitor(node)
+  File "C:\Users\jarre\VS Code Projects\Faasification\lambada\lambadalib\codegen\code_gen.py", line 474, in visit_Return    self.conditional_write(' ', node.value)
+  File "C:\Users\jarre\VS Code Projects\Faasification\lambada\lambadalib\codegen\code_gen.py", line 200, in conditional_write
+    self.write(*stuff)
+  File "C:\Users\jarre\VS Code Projects\Faasification\lambada\lambadalib\codegen\code_gen.py", line 164, in write      
+    visit(item)
+  File "C:\Users\jarre\VS Code Projects\Faasification\lambada\lambadalib\codegen\node_util.py", line 131, in visit      
+    return visitor(node)
+  File "C:\Users\jarre\VS Code Projects\Faasification\lambada\lambadalib\codegen\code_gen.py", line 704, in visit_Tuple
+    self.comma_list(elts, len(elts) == 1)
+TypeError: object of type 'Constant' has no len()
