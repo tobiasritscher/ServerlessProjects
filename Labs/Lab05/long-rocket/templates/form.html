@@ -1,0 +1,22 @@
+
+{% import "macro.html" %}
+{% extends "base.html" %}
+{% block content %}
+<style>
+.container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px 10px;
+}
+</style>
+<h1>Feedback</h1>
+<form action="/validation" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <p>{{ form.text.label }}<br> {{ form.text() }}</p>
+        {% for error in form.text.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+        <p>{{ form.submit() }}</p>
+</form>
+{% endblock %}
+
