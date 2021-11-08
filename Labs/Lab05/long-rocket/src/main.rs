@@ -1,46 +1,45 @@
-use rocket::FromForm;
-use rocket_dyn_templates::{Engines, Template};
+use rocket::{
+    figment::{
+        util::map,
+        value::{Map, Value},
+    },
+    serde::{json, Deserialize, Serialize},
+};
 
-#[rocket::get("/db")]
-fn db() -> String {
-    format!("tmp {}", "alive?")
+const DB_PATH_ENV: &str = "DB_PATH";
+
+#[rocket_sync_db_pools::database("main_db")]
+struct Database(rocket_sync_db_pools::rusqlite::Connection);
+
+#[derive(Debug, Deserialize)]
+struct SendBlog<'data> {
+    timestamp: &'data str,
+    text: &'data str,
 }
 
-#[derive(rocket::FromForm)]
-struct Task<'d> {
-    text: &'d str,
+#[derive(Debug, Serialize)]
+struct SendBlockAnswer {
+    id: usize,
 }
 
-#[rocket::post("/form", data = "<task>")]
-fn form_submitted(task: rocket::form::Form<Task<'_>>) -> Template {}
-
-fn form() -> Template {
+#[rocket::post("/set", data = "<data>")]
+fn set(data: json::Json<SendBlog<'_>>) -> json::Json<SendBlockAnswer> {
     todo!()
 }
 
-#[rocket::get("/")]
-fn root() -> String {
-    format!("Welcome, {}", "b")
+#[rocket::get("/get/<id>")]
+fn get(id: usize) -> String {
+    todo!()
 }
 
 #[rocket::launch]
 fn rocket() -> _ {
-    rocket::build()
-        .attach(Template::try_custom(setup))
-        .mount("/", rocket::routes![root, db])
-}
+    let db: Map<_, Value> = map! {
+        "url" => std::env::var(DB_PATH_ENV).expect("missing DB_PATH_ENV").into(),
+        "pool_size" => 10.into()
+    };
 
-fn setup(engine: &mut Engines) -> Result<(), Box<dyn std::error::Error>> {
-    macro_rules! t {
-        ($v:literal) => {
-            include_str!(concat!("../templates/", $v))
-        };
-    }
-    let err = engine.tera.add_raw_templates([
-        ("base.html", t!("base.html")),
-        ("form.html", t!("form.html")),
-        ("macro.html", t!("macro.html.tera")),
-        ("form_submitted.html", t!("form_submitted.html")),
-    ]);
-    err.map_err(|err| Box::new(err) as _)
+    let figment = rocket::Config::figment().merge(("databases", map! [ "main_db" => db ]));
+
+    rocket::custom(figment).mount("/", rocket::routes![set, get])
 }
