@@ -31,20 +31,21 @@ struct SendBlockAnswer {
 #[rocket::post("/set", data = "<data>")]
 async fn create(db: InternalDB, data: Json<SendBlog>) -> Result<Created<Json<SendBlockAnswer>>> {
     const INSERT: &str = r#"
-        INSERT INTO blogs 
+        INSERT INTO blogs
             (timestamp, text)
         VALUES
-            (?1, ?2)
+            (?1, ?2);
     "#;
 
     const LAST_ID: &str = r#"
-        SELECT last_inserted_rowid()
+        SELECT last_insert_rowid();
     "#;
 
     db.run(move |conn| conn.execute(INSERT, rusqlite::params![data.timestamp, data.text]))
         .await?;
+
     let id = db
-        .run(|conn| conn.execute(LAST_ID, rusqlite::params![]))
+        .run(|conn| conn.query_row(LAST_ID, rusqlite::params![], |v| Ok(v.get(0)?)))
         .await?;
 
     Ok(Created::new("/").body(Json(SendBlockAnswer { id })))
@@ -67,10 +68,10 @@ struct Blogs {
 #[rocket::get("/get/<id>")]
 async fn get(db: InternalDB, id: usize) -> Option<Json<Blog>> {
     const SELECT: &str = r#"
-        SELECT 
+        SELECT
             id, timestamp, text
         FROM blogs
-        WHERE id = ?1
+        WHERE id = ?1;
     "#;
     let blog = db
         .run(move |conn| {
@@ -91,9 +92,9 @@ async fn get(db: InternalDB, id: usize) -> Option<Json<Blog>> {
 #[rocket::get("/get")]
 async fn get_all(db: InternalDB) -> Result<Json<Blogs>> {
     const SELECT: &str = r#"
-        SELECT 
+        SELECT
             id, timestamp, text
-        FROM blogs
+        FROM blogs;
     "#;
     let blogs = db
         .run(|conn| {
@@ -118,7 +119,7 @@ async fn setup_db(rocket: Rocket<Build>) -> Rocket<Build> {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             timestamp VARCHAR NOT NULL,
             text VARCHAR NOT NULL
-        )"#;
+        );"#;
 
     InternalDB::get_one(&rocket)
         .await
@@ -132,16 +133,20 @@ async fn setup_db(rocket: Rocket<Build>) -> Rocket<Build> {
 
 #[rocket::launch]
 async fn rocket() -> _ {
-    let confs = [("ROCKET_ADDRESS", "0.0.0.0"), ("ROCKET_PORT", "8000")];
+    const DB_PATH_ENV: &str = "DB_PATH";
+
+    let confs = [
+        ("ROCKET_ADDRESS", "0.0.0.0"),
+        ("ROCKET_PORT", "8000"),
+        (DB_PATH_ENV, "db.sqlite"),
+    ];
 
     for (key, value) in confs {
         std::env::set_var(key, value)
     }
 
-    const DB_PATH_ENV: &str = "DB_PATH";
-
     let db: Map<_, Value> = map! {
-        "url" => "db.sql".into(), //std::env::var(DB_PATH_ENV).expect("missing enviromental variable DB_PATH").into(),
+        "url" => std::env::var(DB_PATH_ENV).expect("missing enviromental variable DB_PATH").into(),
         "pool_size" => 10.into()
     };
 
