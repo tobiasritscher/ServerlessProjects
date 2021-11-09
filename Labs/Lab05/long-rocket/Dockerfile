@@ -1,7 +1,7 @@
 FROM rust:latest AS builder
 
-RUN rustup target add x86_64-unknown-linux-musl
-RUN apt update && apt install -y musl-tools musl-dev
+# RUN rustup target add x86_64-unknown-linux-musl
+# RUN apt update && apt install -y musl-tools musl-dev
 RUN update-ca-certificates
 
 # Create appuser
@@ -17,13 +17,13 @@ COPY ./src ./src
 COPY Cargo.lock .
 COPY Cargo.toml .
 
-RUN cargo build --target x86_64-unknown-linux-musl --release
+RUN cargo build --release
 
 ####################################################################################################
 ## Final image
 ####################################################################################################
-FROM scratch
-
+FROM debian:buster-slim as runtime
+RUN apt update -y && apt install sqlite3 -y
 # Import from builder.
 COPY --from=builder /etc/passwd /etc/passwd
 COPY --from=builder /etc/group /etc/group
@@ -31,14 +31,18 @@ COPY --from=builder /etc/group /etc/group
 WORKDIR /myip
 
 # Copy our build
-COPY --from=builder /myip/target/x86_64-unknown-linux-musl/release/long-rocket ./
+COPY --from=builder /myip/target/release/long-rocket ./
 
 # Use an unprivileged user.
 
-USER myip:myip
+RUN mkdir /myip/db
+
 ENV ROCKET_ADDRESS "0.0.0.0"
 ENV ROCKET_PORT 8000
-ENV DB_PATH "/db.sqlite"
+ENV DB_PATH "/myip/db/db.sqlite"
+
 EXPOSE 8000
+
+# USER myip:myip
 
 CMD ["/myip/long-rocket"]
