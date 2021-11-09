@@ -9,7 +9,6 @@ use rocket::{
 };
 
 use rocket_sync_db_pools::rusqlite;
-const DB_PATH_ENV: &str = "DB_PATH";
 
 type Result<T, E = Debug<rusqlite::Error>> = std::result::Result<T, E>;
 
@@ -133,8 +132,16 @@ async fn setup_db(rocket: Rocket<Build>) -> Rocket<Build> {
 
 #[rocket::launch]
 async fn rocket() -> _ {
+    let confs = [("ROCKET_ADDRESS", "0.0.0.0"), ("ROCKET_PORT", "8000")];
+
+    for (key, value) in confs {
+        std::env::set_var(key, value)
+    }
+
+    const DB_PATH_ENV: &str = "DB_PATH";
+
     let db: Map<_, Value> = map! {
-        "url" => std::env::var(DB_PATH_ENV).expect("missing DB_PATH_ENV").into(),
+        "url" => "db.sql".into(), //std::env::var(DB_PATH_ENV).expect("missing enviromental variable DB_PATH").into(),
         "pool_size" => 10.into()
     };
 

@@ -1,27 +1,21 @@
-FROM ekidd/rust-musl-builder:stable AS builder
+FROM lukemathwalker/cargo-chef:latest-rust-1.56.1 AS chef
+WORKDIR app
 
-WORKDIR /home/rust
+FROM chef AS planner
+COPY . .
+RUN cargo chef prepare --recipe-path recipe.json
 
-# make changing something in the source code faster
-# (it doesn't need to compile everything again)
-COPY Cargo.toml .
-COPY Cargo.lock .
-
-# a hack to precompile the dependencies
-RUN echo "fn main() {println!(\"if you see this, the build broke\")}" > src/main.rs
-
-# compile first step
+FROM chef AS builder
+COPY --from=planner /app/recipe.json recipe.json
+# Build dependencies - this is the caching Docker layer!
+RUN cargo chef cook --release --recipe-path recipe.json
+# Build application
+COPY . .
 RUN cargo build --release
 
-COPY src/. src/.
-
-# Compile actual program
-RUN cargo build --release
-
-FROM scratch
-
-COPY --from=builder /home/rust/long-rocket/target/x86_64-unknown-linux-musl/release/long-rocket /usr/local/bin/
-
-USER 1000
-
-CMD [ "long-rocket"]
+# We do not need the Rust toolchain to run the binary!
+FROM debian:buster-slim AS runtime
+RUN apt update -y && apt install sqlite3 -y
+WORKDIR app
+COPY --from=builder /app/target/release/long-rocket /usr/local/bin
+ENTRYPOINT ["/usr/local/bin/long-rocket"]
