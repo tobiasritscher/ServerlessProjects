@@ -138,7 +138,7 @@ async fn rocket() -> _ {
     let confs = [
         ("ROCKET_ADDRESS", "0.0.0.0"),
         ("ROCKET_PORT", "8000"),
-        (DB_PATH_ENV, "db.sqlite"),
+        (DB_PATH_ENV, "/db.sqlite"),
     ];
 
     for (key, value) in confs {

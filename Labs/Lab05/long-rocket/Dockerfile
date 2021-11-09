@@ -1,21 +1,44 @@
-FROM lukemathwalker/cargo-chef:latest-rust-1.56.1 AS chef
-WORKDIR app
+FROM rust:latest AS builder
 
-FROM chef AS planner
-COPY . .
-RUN cargo chef prepare --recipe-path recipe.json
+RUN rustup target add x86_64-unknown-linux-musl
+RUN apt update && apt install -y musl-tools musl-dev
+RUN update-ca-certificates
 
-FROM chef AS builder
-COPY --from=planner /app/recipe.json recipe.json
-# Build dependencies - this is the caching Docker layer!
-RUN cargo chef cook --release --recipe-path recipe.json
-# Build application
-COPY . .
-RUN cargo build --release
+# Create appuser
+ENV USER=myip
+ENV UID=10001
 
-# We do not need the Rust toolchain to run the binary!
-FROM debian:buster-slim AS runtime
-RUN apt update -y && apt install sqlite3 -y
-WORKDIR app
-COPY --from=builder /app/target/release/long-rocket /usr/local/bin
-ENTRYPOINT ["/usr/local/bin/long-rocket"]
+RUN adduser --disabled-password --gecos "" --home "/nonexistent" --shell "/sbin/nologin" --no-create-home --uid "${UID}" "${USER}"
+
+
+WORKDIR /myip
+
+COPY ./src ./src
+COPY Cargo.lock .
+COPY Cargo.toml .
+
+RUN cargo build --target x86_64-unknown-linux-musl --release
+
+####################################################################################################
+## Final image
+####################################################################################################
+FROM scratch
+
+# Import from builder.
+COPY --from=builder /etc/passwd /etc/passwd
+COPY --from=builder /etc/group /etc/group
+
+WORKDIR /myip
+
+# Copy our build
+COPY --from=builder /myip/target/x86_64-unknown-linux-musl/release/long-rocket ./
+
+# Use an unprivileged user.
+
+USER myip:myip
+ENV ROCKET_ADDRESS "0.0.0.0"
+ENV ROCKET_PORT 8000
+ENV DB_PATH "/db.sqlite"
+EXPOSE 8000
+
+CMD ["/myip/long-rocket"]
