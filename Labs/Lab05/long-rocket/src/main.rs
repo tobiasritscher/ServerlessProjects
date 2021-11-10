@@ -113,6 +113,11 @@ async fn get_all(db: InternalDB) -> Result<Json<Blogs>> {
     Ok(Json(Blogs { all: blogs }))
 }
 
+#[rocket::get("/")]
+async fn index() -> &'static str {
+    "Please add to the database via /set or get the list via /get/<id>"
+}
+
 async fn setup_db(rocket: Rocket<Build>) -> Rocket<Build> {
     const TABLE: &str = r#"
         CREATE TABLE IF NOT EXISTS blogs (
@@ -135,16 +140,6 @@ async fn setup_db(rocket: Rocket<Build>) -> Rocket<Build> {
 async fn rocket() -> _ {
     const DB_PATH_ENV: &str = "DB_PATH";
 
-    let confs = [
-        ("ROCKET_ADDRESS", "0.0.0.0"),
-        ("ROCKET_PORT", "8000"),
-        (DB_PATH_ENV, "/db.sqlite"),
-    ];
-
-    for (key, value) in confs {
-        std::env::set_var(key, value)
-    }
-
     let db: Map<_, Value> = map! {
         "url" => std::env::var(DB_PATH_ENV).expect("missing enviromental variable DB_PATH").into(),
         "pool_size" => 10.into()
@@ -155,5 +150,5 @@ async fn rocket() -> _ {
     rocket::custom(figment)
         .attach(InternalDB::fairing())
         .attach(rocket::fairing::AdHoc::on_ignite("Init database", setup_db))
-        .mount("/", rocket::routes![create, get, get_all])
+        .mount("/", rocket::routes![create, get, get_all, index])
 }
