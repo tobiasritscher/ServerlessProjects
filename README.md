@@ -183,3 +183,4 @@ This [function](https://europe-west6-formal-airway-260.cloudfunctions.net/ex4-tr
 We put OpenFaas on a [raspberry pie](https://faas.ritscher.ch) and used a selfhosted [docker registry](https://dockerhub.ritscher.ch) to deploy the docker container with the cloud function.
 
 ## [P05:](/Labs/Lab05)
+[Display_Blogs](https://github.zhaw.ch/nguyesyd/SCAD-CLUELESS/tree/master/Labs/Lab05/display_blogs)/[link](https://hello-python-yiw4r3uyta-oa.a.run.app/): We made a short-lived container that runs in the GCP, that displays a list of our blog posts. It's a flask server that returns an HTML page with the list of blogs.
