@@ -185,12 +185,12 @@ We put OpenFaas on a [raspberry pie](https://faas.ritscher.ch) and used a selfho
 ## [P05:](/Labs/Lab05)
 - [Display_Blogs](https://github.zhaw.ch/nguyesyd/SCAD-CLUELESS/tree/master/Labs/Lab05/display_blogs)/[link](https://hello-python-yiw4r3uyta-oa.a.run.app/): We made a short-lived container that runs in the GCP, that displays a list of our blog posts. It's a flask server that returns an HTML page with the list of blogs.
 - [Database](https://github.zhaw.ch/nguyesyd/SCAD-CLUELESS/tree/master/Labs/Lab05/long-rocket/)/[link](https://scaddb.ritscher.ch/): This is one of the long living crates. It is written primarily in rust but uses some c dependencies, so that we satisfy the given poligot requirements. Additionally to enable a persistent data state we host it on our own service with a dedicated docker volumn mounted in at all time. 
-- [Make a new Post](https://scadlab5.ritscher.ch/)/[link](https://github.zhaw.ch/nguyesyd/SCAD-CLUELESS/tree/master/Labs/Lab05/submit): Here you can write a post which will be saved in the database. This long living container runs on our privatly hostet server.
+- [Make a new Blog](https://scadlab5.ritscher.ch/)/[link](https://github.zhaw.ch/nguyesyd/SCAD-CLUELESS/tree/master/Labs/Lab05/submit): Here you can write a blog which will be saved in the database. This long living container runs on our privatly hosted server.
 
-### Project explenation
+### Project explanation
 In this project we implemented a simple blog platform, where everyone can post a new message and this will be shown in the blog. In the backround the messages will be saved in a databse with a timetag. The complexity is in the connection between the containers with different languages and different locations as well as saving all data in a sqlite file so the data won't be lost when the server or the container is restartet.
 
-This Project uses Google Cloud as well as a private hosted cloud server with Unraid OS. There is also a selfhosted dockerhub (https://dockerhub.ritscher.ch) running inside a container, but we can't share the credentials because of security reasons. We used Rust and Python as the programming language.
+This project uses Google Cloud as well as a private hosted cloud server with Unraid OS. There is also a selfhosted dockerhub (https://dockerhub.ritscher.ch) running inside a container, but we can't share the credentials because of security reasons. We used Rust and Python as the programming language.
 
 ### Dockerhub links:
 Make a new Post: https://hub.docker.com/r/thebluefirefox/scad-ex5-submit
