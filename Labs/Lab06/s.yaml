@@ -1,0 +1,79 @@
+#%RAML 1.0
+title: ZEncoder API
+version: v2
+baseUri: https://app.zencoder.com/api/{version}
+/start:
+  post:
+    description: Create a multiplications job
+    body:
+      application/json:
+        type: 
+          {
+            "type": "object",
+            "$schema": "http://json-schema.org/draft-03/schema",
+            "id": "http://jsonschema.net",
+            "required": true,
+            "properties": {
+              "calculate": {
+                "type": "integer",
+                "required": true,
+                "minimum": -128,
+                "maximum": 127,
+                "format": int8
+            },
+        },
+      }
+      example: 
+        {
+          "calculate": 42,
+      }
+/calc1:
+  post:
+    description: Create a multiplications job
+    body:
+      application/json:
+        type: 
+          {
+            "type": "object",
+            "$schema": "http://json-schema.org/draft-03/schema",
+            "id": "http://jsonschema.net",
+            "required": true,
+            "properties": {
+              "calculate": {
+                "type": "integer",
+                "required": true,
+                "minimum": -128,
+                "maximum": 127,
+                "format": int8
+            },
+        },
+      }
+      example: 
+        {
+          "calculate": 42,
+      }
+/calc2:
+  post:
+    description: Create a multiplications job
+    body:
+      application/json:
+        type: 
+          {
+            "type": "object",
+            "$schema": "http://json-schema.org/draft-03/schema",
+            "id": "http://jsonschema.net",
+            "required": true,
+            "properties": {
+              "calculate": {
+                "type": "integer",
+                "required": true,
+                "minimum": -128,
+                "maximum": 127,
+                "format": int8
+            },
+        },
+      }
+      example: 
+        {
+          "calculate": 42,
+      }
