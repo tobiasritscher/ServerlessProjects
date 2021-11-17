@@ -197,3 +197,9 @@ Make a new Post: https://hub.docker.com/r/thebluefirefox/scad-ex5-submit
 Database: https://hub.docker.com/r/thebluefirefox/scad-long-rocket-db 
 
 
+## [P06:](/Labs/Lab06)
+
+### Project explanation
+In this lab we used [Ballerina](https://ballerina.io) to develope [three micro services](/myServices). The first one, called service1, takes an integer as a URL parameter and invokes service2 with the integer as parameter.
+Ladder one performs a multiplication with specified constant and invokes service3 with the result again as a parameter. Finally, service3 does the same task as service2 but with another specified constanz.
+The [raml file](/Labs/Lab06/api.raml) makes the micro services discoverable. 
