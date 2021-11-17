@@ -1,9 +1,9 @@
 #%RAML 1.0
 title: CalculatorAPI
 
-/start:
+/service1:
   post:
-    description: Create a multiplications job
+    description: URL parameter as input
     responses:
       200:
         body:
@@ -36,9 +36,9 @@ title: CalculatorAPI
           {
             "calculate": 42,
           }
-/calc1:
+/service2:
   post:
-    description: Create a multiplications job
+    description: Multiplicate input of /service1 with constant
     responses:
       200:
         body:
@@ -71,9 +71,9 @@ title: CalculatorAPI
           {
             "calculate": 42,
           }
-/calc2:
+/service3:
   post:
-    description: Create a multiplications job
+    description: Multiplicate result of /service2 with constant
     responses:
       200:
         body:
