@@ -29,6 +29,7 @@ RUN musl-strip /app/target/x86_64-unknown-linux-musl/release/long-rocket
 # final stage
 FROM alpine as runtime
 
+
 COPY --from=builder /app/target/x86_64-unknown-linux-musl/release/long-rocket /usr/local/bin/
 
 # Prepare the db folder
@@ -36,13 +37,15 @@ RUN addgroup -S iuser && adduser -S iuser -G iuser &&\
 	mkdir -p /db &&\
 	chown iuser /db
 
+USER iuser
+
 # Required ENV PATHS
 ENV ROCKET_ADDRESS="0.0.0.0" \
 	ROCKET_PORT=8000 \
 	DB_PATH="/db/sql.db"
-
 EXPOSE 8000
 
-USER iuser
+# healthcheck based on https://scoutapm.com/blog/how-to-use-docker-healthcheck
+HEALTHCHECK CMD curl --fail http://localhost:8000/get || exit 1
 
 CMD [ "long-rocket" ]
