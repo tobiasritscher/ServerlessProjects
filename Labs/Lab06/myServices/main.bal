@@ -10,7 +10,7 @@ service / on new http:Listener(8080){
     }
 }
 
-service /on new http:Listener(8081){
+service / on new http:Listener(8081){
     resource function get service2(int num) returns int|error {
         http:Client calc3 = check new ("http://localhost:8082");
         int temp = check calc3->get("/service3?num="+num.toString());
