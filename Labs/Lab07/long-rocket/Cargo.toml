@@ -1,7 +1,7 @@
 [package]
 name = "long-rocket"
-version = "0.1.0"
-edition = "2018"
+version = "0.2.0"
+edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -10,5 +10,6 @@ rocket = { git = "https://github.com/SergioBenitez/Rocket", rev = "8cae077", fea
 rocket_db_pools = { git = "https://github.com/SergioBenitez/Rocket", rev = "8cae077", features = [ "sqlx_sqlite" ], default-features = true }
 sqlx =  { version = "0.5", default-features = false, features = ["macros", "offline", "migrate"] }
 
-# rocket = { version = "0.5.0-rc.1", features = [ "json" ], default-features = false }
-# rocket_sync_db_pools = { version = "0.1.0-rc.1", features = [ "sqlite_pool" ], default-features = true }
+[profile.release]
+lto = true
+codegen-units = 1

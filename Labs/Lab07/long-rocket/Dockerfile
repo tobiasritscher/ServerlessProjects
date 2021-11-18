@@ -26,9 +26,9 @@ RUN cargo build --release --target x86_64-unknown-linux-musl
 # Strip
 RUN musl-strip /app/target/x86_64-unknown-linux-musl/release/long-rocket
 
+
 # final stage
 FROM alpine as runtime
-
 
 COPY --from=builder /app/target/x86_64-unknown-linux-musl/release/long-rocket /usr/local/bin/
 
