@@ -1,0 +1,73 @@
+{
+  "db": "SQLite",
+  "1b42174f4e79a3f13b4235800fa983f9caee6d4880335eb955cbcda585b01417": {
+    "query": "\n        INSERT INTO blogs\n            (timestamp, text)\n        VALUES\n            (?, ?);\n        ",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Right": 2
+      },
+      "nullable": []
+    }
+  },
+  "3bdef6f71872861c0661662d261ae0932a1e99be36e2ff35d71b95da5c4e26f1": {
+    "query": "\n        SELECT\n            id, timestamp, text\n        FROM blogs;\n        ",
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int64"
+        },
+        {
+          "name": "timestamp",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "text",
+          "ordinal": 2,
+          "type_info": "Text"
+        }
+      ],
+      "parameters": {
+        "Right": 0
+      },
+      "nullable": [
+        false,
+        false,
+        false
+      ]
+    }
+  },
+  "a9a5d102b981bf0056b502bc80b39ad021d6bcbc2be6acaec4b1d95e129cde1a": {
+    "query": "\n        SELECT\n            id, timestamp, text\n        FROM blogs\n        WHERE id = ?;\n    ",
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int64"
+        },
+        {
+          "name": "timestamp",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "text",
+          "ordinal": 2,
+          "type_info": "Text"
+        }
+      ],
+      "parameters": {
+        "Right": 1
+      },
+      "nullable": [
+        false,
+        false,
+        false
+      ]
+    }
+  }
+}
