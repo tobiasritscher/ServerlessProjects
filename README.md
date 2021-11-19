@@ -203,3 +203,13 @@ Database: https://hub.docker.com/r/thebluefirefox/scad-long-rocket-db
 In this lab we used [Ballerina](https://ballerina.io) to develope [three micro services](/Labs/Lab06/myServices). The first one, called service1, takes an integer as a URL parameter and invokes service2 with the integer as parameter.
 Ladder one performs a multiplication with specified constant and invokes service3 with the result again as a parameter. Finally, service3 does the same task as service2 but with another specified constanz.
 The [raml file](/Labs/Lab06/api.raml) makes the micro services discoverable. 
+
+## [P07:](/Labs/Lab07)
+### Quality Analysis
+#### Weaknesses 
+1) Dockerfile long-rocket: new smaller base image<br>
+Using different a base image as the previous one was on the bigger side. A bigger image will automatically use up more ram in the host system with might cost more. Additionally on scalable systems, where the docker container has to be copied from the storage system to different hosts for load balancing. A smaller image will yield significantly faster start up time.<br>
+By changing some of the application parameters to make it compile with [musl](https://musl.libc.org/) instead of the default [glibc](https://en.wikipedia.org/wiki/Glibc) libraries and using static linking of dynamic  instead. We were able to switch to the apline:latest base image from the debian:buster-slim. By applying all these steps we were able to go from a 100Mb large container image to a 11Mb large one. 
+2) Dockerfile long-rocket: healthcheck<br>
+A healthcheck will help on long running systems as the administrator gets to check the containers availability without needing to call the application output, assuming there even is an output in the first place. <br>
+Adding a line to the Dockerfile we got the healthcheck working. 
