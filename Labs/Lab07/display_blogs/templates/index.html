@@ -1,0 +1,139 @@
+<!doctype html>
+<html>
+
+<head>
+
+      <title>{{ title }}</title>
+
+      <style>
+            .styled-table {
+                  border-collapse: collapse;
+                  margin: 25px 0;
+                  font-size: 0.9em;
+                  font-family: sans-serif;
+                  min-width: 400px;
+                  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+            }
+
+            .styled-table thead tr {
+                  background-color: #009879;
+                  color: #ffffff;
+                  text-align: left;
+            }
+
+            .styled-table th,
+            .styled-table td {
+                  padding: 12px 15px;
+            }
+
+            .styled-table tbody tr {
+                  border-bottom: 1px solid #dddddd;
+            }
+
+            .styled-table tbody tr:nth-of-type(even) {
+                  background-color: #f3f3f3;
+            }
+
+            .styled-table tbody tr:last-of-type {
+                  border-bottom: 2px solid #009879;
+            }
+
+            * {
+                  box-sizing: border-box;
+            }
+
+            input[type=text],
+            select,
+            textarea {
+                  width: 100%;
+                  padding: 12px;
+                  border: 1px solid rgb(70, 68, 68);
+                  border-radius: 4px;
+                  resize: vertical;
+            }
+
+
+            label {
+                  padding: 12px 12px 12px 0;
+                  display: inline-block;
+            }
+
+            input[type=submit] {
+                  background-color: rgb(37, 116, 161);
+                  color: white;
+                  padding: 12px 20px;
+                  border: none;
+                  border-radius: 4px;
+                  cursor: pointer;
+                  float: right;
+            }
+
+            input[type=submit]:hover {
+                  background-color: #009879;
+            }
+
+            .container {
+                  border-radius: 5px;
+                  background-color: #f2f2f2;
+                  padding: 20px;
+            }
+
+            .col-25 {
+                  float: left;
+                  width: 25%;
+                  margin-top: 6px;
+            }
+
+            .col-75 {
+                  float: left;
+                  width: 75%;
+                  margin-top: 6px;
+            }
+
+            .row:after {
+                  content: "";
+                  display: table;
+                  clear: both;
+            }
+      </style>
+
+</head>
+
+<body>
+
+      <div class="container">
+            <form method="Post">
+                  <div class="row">
+                        <div class="col-25">
+                              <label for="Send_Blog">Submit a Blogpost</label>
+                        </div>
+                        <div class="col-75">
+                              <textarea id="send_blog" name="send_blog" placeholder="Enter your Blog here.."
+                                    style="height:200px"></textarea>
+                        </div>
+                  </div>
+                  <div class="row">
+                        <input type="submit" value="Submit">
+                  </div>
+            </form>
+      </div>
+      <h1>{{ title }}</h1>
+      <table style="width:100%" class="styled-table">
+            <thead>
+                  <tr>
+                        <th>Date</th>
+                        <th>Blog Post</th>
+                  </tr>
+            </thead>
+            <tbody>
+                  {% for blog in blogs %}
+                  <tr>
+                        <td>{{ blog.timestamp}}</td>
+                        <td>{{ blog.text}}</td>
+                  </tr>
+                  {% endfor %}
+            </tbody>
+      </table>
+</body>
+
+</html>
