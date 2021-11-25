@@ -10,13 +10,13 @@ baseAdress = os.environ.get("DB_IP")
 def main():  
     
     if flask.request.method == "POST":
-        r = requests.post('https://'+baseAdress+'/set', json={
+        r = requests.post(baseAdress+'/set', json={
             "text": flask.request.form["send_blog"],
             "timestamp" : datetime.datetime.now(datetime.timezone.utc ).isoformat()
         })
         r.raise_for_status()
 
-    r = requests.get('https://'+baseAdress+'/get')
+    r = requests.get(baseAdress+'/get')
     r.raise_for_status()
     myJson = r.json()["all"]
     return flask.render_template("index.html", title="Our Special Blog", blogs=myJson)
