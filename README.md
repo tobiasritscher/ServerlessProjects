@@ -207,13 +207,13 @@ The [raml file](/Labs/Lab06/api.raml) makes the micro services discoverable.
 ## [P07:](/Labs/Lab07)
 ### Quality Analysis
 #### Weaknesses 
-1) [Dockerfile](/Labs/Lab07/long-rocket/Dockerfile) long-rocket: new smaller base image<br>
+1) [Dockerfile  long-rocket](/Labs/Lab07/long-rocket/Dockerfile): new smaller base image<br>
 Using different a base image as the previous one was on the bigger side. A bigger image will automatically use up more ram in the host system which might cost more. Additionally on scalable systems, where the docker container has to be copied from the storage system to different hosts for load balancing. A smaller image will yield significantly faster start up time.<br>
 By changing some of the application parameters to make it compile with [musl](https://musl.libc.org/) instead of the default [glibc](https://en.wikipedia.org/wiki/Glibc) libraries and using static linking of dynamic instead. We were able to switch to the apline:latest base image from the debian:buster-slim. By applying all these steps we were able to go from a 100Mb large container image to a 11Mb large one.
-2) [Dockerfile](/Labs/Lab07/long-rocket/Dockerfile) long-rocket: healthcheck<br>
+2) [Dockerfile  long-rocket](/Labs/Lab07/long-rocket/Dockerfile): healthcheck<br>
 A healthcheck will help on long running systems as the administrator gets to check the containers availability without needing to call the application output, assuming there even is an output in the first place. <br>
 Adding a line to the Dockerfile we got the healthcheck working. 
-3) [Dockerfile](/Labs/Lab07/display_blogs/Dockerfile) Display-Blogs: switch to smaller base image<br>
+3) [Dockerfile Display-Blogs](/Labs/Lab07/display_blogs/Dockerfile) Display-Blogs: switch to smaller base image<br>
 We changed the base image from Python:3.7-slim to Python:3.7-alpine, which reduced it's size by 87 MB.
-4) [Dockerfile](/Labs/Lab07/display_blogs/Dockerfile) removal of unnecessary packages and files <br>
+4) [Dockerfile Display-Blogs](/Labs/Lab07/display_blogs/Dockerfile) removal of unnecessary packages and files <br>
 By merging the two previous containers (including the functionality) from [Lab5](/Labs/Lab5), we were able to reduce the number of files and libraries necessary to offer the same funtionality. The new [container](/Labs/Lab07/display_blogs) contains the functionality of these to containers ([display_blogs](/Labs/Lab05/display_blogs) and [submit](/Labs/Lab05/submit)).
