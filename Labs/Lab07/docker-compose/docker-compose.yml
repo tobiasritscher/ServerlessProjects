@@ -1,0 +1,33 @@
+version: "3.8"
+services:
+  db:
+    ports:
+      - "8000:8000"
+    image: "thebluefirefox/scad-long-rocket-db"
+    volumes:
+      - /mnt/user/appdata/compose:/db/
+    networks:
+      - br0
+        
+
+  frontend:
+    environment:
+      - DB_IP=http://db:8000
+    ports:
+      - "9000:8000"
+    image: "tiray77/display_blogs"
+    depends_on:
+      - db
+    networks:
+     - br0
+        
+
+networks:
+  br0:
+    external: true
+
+
+
+
+
+
