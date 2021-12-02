@@ -217,3 +217,7 @@ Adding a line to the Dockerfile we got the healthcheck working.
 We changed the base image from Python:3.7-slim to Python:3.7-alpine, which reduced it's size by 87 MB.
 4) [Dockerfile Display-Blogs](/Labs/Lab07/display_blogs/Dockerfile) removal of unnecessary packages and files <br>
 By merging the two previous containers (including the functionality) from [Lab5](/Labs/Lab5), we were able to reduce the number of files and packages necessary to offer the same funtionality. The new [container](/Labs/Lab07/display_blogs) contains the functionality of these to containers ([display_blogs](/Labs/Lab05/display_blogs) and [submit](/Labs/Lab05/submit)).
+
+### [Docker-compose file](https://github.zhaw.ch/nguyesyd/SCAD-CLUELESS/tree/master/Labs/Lab07/docker-compose)
+The docker compose file defines the frontend and the db (backend)
+this has been converted to Kubernetes manifest file: https://github.zhaw.ch/nguyesyd/SCAD-CLUELESS/tree/master/Labs/Lab07/Kubernetes for uploading to the ZHAW Cloud Lab
