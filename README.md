@@ -213,5 +213,5 @@ By changing some of the application parameters to make it compile with [musl](ht
 2) [Dockerfile](/Labs/Lab07/long-rocket/Dockerfile) long-rocket: healthcheck<br>
 A healthcheck will help on long running systems as the administrator gets to check the containers availability without needing to call the application output, assuming there even is an output in the first place. <br>
 Adding a line to the Dockerfile we got the healthcheck working. 
-3) [Dockerfile](/Labs/Lab07/display_blogs/Dockerfile) Display-Blogs: smaller base image<br>
+3) [Dockerfile](/Labs/Lab07/display_blogs/Dockerfile) Display-Blogs: switch to smaller base image<br>
 We changed the base image from Python:3.7-slim to Python:3.7-alpine, which reduced it's size by 87 MB.
