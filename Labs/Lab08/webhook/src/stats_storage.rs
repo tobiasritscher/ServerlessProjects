@@ -22,7 +22,7 @@ pub mod storage {
 
     use futures::FutureExt;
     use once_cell::sync::OnceCell;
-    use parking_lot::{Mutex, RwLock};
+    use parking_lot::{Mutex, RwLock, RwLockReadGuard};
     use std::{
         collections::VecDeque,
         ops::{Deref, DerefMut},
@@ -35,11 +35,9 @@ pub mod storage {
 
     pub const DATA_MAX_AGE: std::time::Duration = std::time::Duration::from_secs(60 * 5);
 
-    static INSTANCE: OnceCell<Storage> = OnceCell::new();
-
     #[derive(serde::Serialize, Debug)]
     #[serde(transparent)]
-    struct Blocks(VecDeque<Info>);
+    pub struct Blocks(VecDeque<Info>);
 
     impl Blocks {
         fn new() -> Self {
@@ -60,6 +58,8 @@ pub mod storage {
             &mut self.0
         }
     }
+
+    static INSTANCE: OnceCell<Storage> = OnceCell::new();
 
     struct Storage {
         data: RwLock<Blocks>,
@@ -121,8 +121,8 @@ pub mod storage {
         get_storage().store(data);
     }
 
-    pub fn serialized() -> Result<String, serde_json::Error> {
-        serde_json::to_string(&*get_storage().data.read())
+    pub fn serialized() -> RwLockReadGuard<'static, Blocks> {
+        get_storage().data.read()
     }
 
     fn get_storage() -> &'static Storage {

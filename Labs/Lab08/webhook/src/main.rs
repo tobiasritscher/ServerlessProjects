@@ -24,8 +24,10 @@ fn setup() {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     setup();
-    let server = HttpServer::new(|| App::new().service(routes::get_scope()))
-        .bind("127.0.0.1:8080")?
+    const ADDR: &str = "127.0.0.1:8080";
+    log::info!("setting up server on {}", ADDR);
+    let server = HttpServer::new(|| App::new().service(routes::get_scope("")))
+        .bind(ADDR)?
         .run();
     let runner = stats_storage::storage::handler();
 
