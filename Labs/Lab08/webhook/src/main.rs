@@ -23,7 +23,7 @@ fn setup() -> String {
 
     pretty_env_logger::init_timed();
 
-    const BASE_ADDRESS: &str = "127.0.0.1:8080";
+    const BASE_ADDRESS: &str = "127.0.0.1:8000";
     const SERVER_ADDRESS: &str = "SERVER_ADDRESS";
     const SERVER_PORT: &str = "SERVER_PORT";
 

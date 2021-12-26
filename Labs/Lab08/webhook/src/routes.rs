@@ -19,9 +19,12 @@ async fn webhook(info: web::Json<Info>) -> Result<impl Responder> {
 
 #[get("/stats")]
 async fn stats() -> Result<impl Responder> {
+    use actix_web::http::StatusCode;
     log::debug!("webhook stats");
 
     let data = storage::serialized();
 
-    Ok(actix_web::HttpResponseBuilder::new(actix_web::http::StatusCode::OK).json(&*data))
+    Ok(actix_web::HttpResponseBuilder::new(StatusCode::OK)
+        .insert_header(("Content-Type", "application/json; charset=utf-8"))
+        .json(&*data))
 }
