@@ -1,4 +1,4 @@
-use actix_web::{dev, get, post, web, Responder, Result};
+use actix_web::{get, post, web, Responder, Result};
 
 use crate::stats_storage::{storage, Info};
 

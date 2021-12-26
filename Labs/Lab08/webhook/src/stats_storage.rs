@@ -29,45 +29,55 @@ pub mod storage {
     };
     use tokio::sync::mpsc::{unbounded_channel, UnboundedReceiver, UnboundedSender};
 
-    use super::Info;
+    use super::{timestamp, Info};
 
     pub const RUNNER_TIMEOUT: u64 = 5;
 
     pub const DATA_MAX_AGE: std::time::Duration = std::time::Duration::from_secs(60 * 5);
 
+    pub trait Creation: serde::Serialize + std::fmt::Debug {
+        fn timestamp(&self) -> &timestamp::TimeStamp;
+    }
+
+    impl Creation for Info {
+        fn timestamp(&self) -> &timestamp::TimeStamp {
+            &self.timestamp
+        }
+    }
+
     #[derive(serde::Serialize, Debug)]
     #[serde(transparent)]
-    pub struct Blocks(VecDeque<Info>);
+    pub struct Blocks<T: Creation>(VecDeque<T>);
 
-    impl Blocks {
+    impl<T: Creation> Blocks<T> {
         fn new() -> Self {
             Self(VecDeque::new())
         }
     }
 
-    impl Deref for Blocks {
-        type Target = VecDeque<Info>;
+    impl<T: Creation> Deref for Blocks<T> {
+        type Target = VecDeque<T>;
 
         fn deref(&self) -> &Self::Target {
             &self.0
         }
     }
 
-    impl DerefMut for Blocks {
+    impl<T: Creation> DerefMut for Blocks<T> {
         fn deref_mut(&mut self) -> &mut Self::Target {
             &mut self.0
         }
     }
 
-    static INSTANCE: OnceCell<Storage> = OnceCell::new();
+    static INSTANCE: OnceCell<Storage<Info>> = OnceCell::new();
 
-    struct Storage {
-        data: RwLock<Blocks>,
-        send: UnboundedSender<Info>,
-        recv: Mutex<UnboundedReceiver<Info>>,
+    struct Storage<T: Creation> {
+        data: RwLock<Blocks<T>>,
+        send: UnboundedSender<T>,
+        recv: Mutex<UnboundedReceiver<T>>,
     }
 
-    impl Storage {
+    impl<T: Creation> Storage<T> {
         fn new() -> Self {
             let (send, recv) = unbounded_channel();
             let recv = Mutex::new(recv);
@@ -75,7 +85,7 @@ pub mod storage {
             Self { data, send, recv }
         }
 
-        fn store(&self, data: Info) {
+        fn store(&self, data: T) {
             // SAFETY: unwrap is safe here as there is no way for this function
             // to fail, given that both sender and receiver are bound to this
             // struct.
@@ -104,7 +114,7 @@ pub mod storage {
             let mut data = self.data.write();
             while !data.is_empty() {
                 let be_dropped = if let Some(entry) = data.front() {
-                    *entry.timestamp < chrono::Utc::now() - max_age
+                    **entry.timestamp() < chrono::Utc::now() - max_age
                 } else {
                     false
                 };
@@ -121,11 +131,11 @@ pub mod storage {
         get_storage().store(data);
     }
 
-    pub fn serialized() -> RwLockReadGuard<'static, Blocks> {
+    pub fn serialized() -> RwLockReadGuard<'static, Blocks<Info>> {
         get_storage().data.read()
     }
 
-    fn get_storage() -> &'static Storage {
+    fn get_storage() -> &'static Storage<Info> {
         INSTANCE.get_or_init(Storage::new)
     }
 
