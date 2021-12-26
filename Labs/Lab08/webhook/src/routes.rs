@@ -1,6 +1,6 @@
 use actix_web::{get, post, web, Responder, Result};
 
-use crate::stats_storage::{storage, Info};
+use crate::{model::Info, storage};
 
 pub fn get_scope(path: &str) -> actix_web::Scope {
     web::scope(path).service(webhook).service(stats)

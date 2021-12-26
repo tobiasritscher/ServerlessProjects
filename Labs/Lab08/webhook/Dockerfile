@@ -1,0 +1,62 @@
+# first stage base system
+FROM messense/rust-musl-cross:x86_64-musl as chef
+
+# using the root user so that we can install stuff
+USER root
+
+RUN cargo install cargo-chef
+
+WORKDIR /app
+
+# second stage
+FROM chef as planner
+
+# Prepare the recipe with that we can create the cash layer
+COPY . .
+RUN cargo chef prepare --recipe-path recipe.json
+
+FROM chef as builder
+COPY --from=planner /app/recipe.json recipe.json
+
+# Precopile all the dependencies -> This cashes the docker layer
+RUN cargo chef cook --release --target x86_64-unknown-linux-musl --recipe-path recipe.json
+
+# Compile actual program
+COPY . .
+RUN cargo build --release --target x86_64-unknown-linux-musl
+
+# Strip
+RUN musl-strip /app/target/x86_64-unknown-linux-musl/release/webhook
+
+# final stage
+FROM alpine as runtime
+
+# Copy the now builded file from the build image to q
+# the current small one
+COPY --from=builder /app/target/x86_64-unknown-linux-musl/release/webhook /usr/local/bin/
+
+# Prepare the db folder
+# Prepare the internally used user
+# Add curl so that the healthcheck will work
+RUN apk add --no-cache curl &&\
+	addgroup -S iuser &&\ 
+	adduser -S iuser -G iuser &&\
+	mkdir -p /db &&\
+	chown iuser /db
+
+USER iuser
+
+# Required ENV PATHS
+# define the needed internal port
+ARG IPORT=8000
+ENV SERVER_ADDRESS="0.0.0.0" \
+	SERVER_PORT=${IPORT}
+
+# EXPOSE the internally used port to the outside world
+EXPOSE ${IPORT}
+
+# healthcheck based on https://scoutapm.com/blog/how-to-use-docker-healthcheck
+HEALTHCHECK --interval=5s --timeout=3s CMD curl --fail http://$SERVER_ADDRESS:$SERVER_PORT/stats || exit 1
+
+CMD [ "webhook" ]
+

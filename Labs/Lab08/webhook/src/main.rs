@@ -1,11 +1,14 @@
+mod model;
 mod routes;
-mod stats_storage;
+mod storage;
+mod timestamp;
 
 use actix_web::{App, HttpServer};
 use cfg_if::cfg_if;
 use futures::future::FutureExt;
 
-fn setup() {
+fn setup() -> String {
+    use std::env::{set_var, var};
     const LOGGER_ENV: &str = "RUST_LOG";
     cfg_if! {
         if #[cfg(debug_assertions)]  {
@@ -14,22 +17,38 @@ fn setup() {
             const VALUE: &str = "warn";
         }
     }
-    if std::env::var_os(LOGGER_ENV).is_none() {
-        std::env::set_var(LOGGER_ENV, VALUE);
+    if var(LOGGER_ENV).is_err() {
+        set_var(LOGGER_ENV, VALUE);
     }
 
     pretty_env_logger::init_timed();
+
+    const BASE_ADDRESS: &str = "127.0.0.1:8080";
+    const SERVER_ADDRESS: &str = "SERVER_ADDRESS";
+    const SERVER_PORT: &str = "SERVER_PORT";
+
+    let server_addr = var(SERVER_ADDRESS);
+    let server_port = var(SERVER_PORT);
+
+    match (server_addr, server_port) {
+        (Ok(addr), Ok(port)) => format!("{}:{}", addr, port),
+        _ => BASE_ADDRESS.to_string(),
+    }
 }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    setup();
-    const ADDR: &str = "127.0.0.1:8080";
-    log::info!("setting up server on {}", ADDR);
+    let server_addr = setup();
+
+    log::info!("setting up server on {}", server_addr);
+
+    // initialize the http server
     let server = HttpServer::new(|| App::new().service(routes::get_scope("")))
-        .bind(ADDR)?
+        .bind(server_addr)?
         .run();
-    let runner = stats_storage::storage::handler();
+
+    // initialize the temporary data storage
+    let runner = storage::handler();
 
     futures::select! {
         res = server.fuse() => res,
