@@ -24,8 +24,8 @@ fn setup() -> String {
     pretty_env_logger::init_timed();
 
     const BASE_ADDRESS: &str = "127.0.0.1:8000";
-    const SERVER_ADDRESS: &str = "SERVER_ADDRESS";
-    const SERVER_PORT: &str = "SERVER_PORT";
+    const SERVER_ADDRESS: &str = "ADDRESS";
+    const SERVER_PORT: &str = "PORT";
 
     let server_addr = var(SERVER_ADDRESS);
     let server_port = var(SERVER_PORT);

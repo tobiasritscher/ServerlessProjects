@@ -49,14 +49,14 @@ USER iuser
 # Required ENV PATHS
 # define the needed internal port
 ARG IPORT=8000
-ENV SERVER_ADDRESS="0.0.0.0" \
-	SERVER_PORT=${IPORT}
+ENV ADDRESS="0.0.0.0" \
+	PORT=${IPORT}
 
 # EXPOSE the internally used port to the outside world
 EXPOSE ${IPORT}
 
 # healthcheck based on https://scoutapm.com/blog/how-to-use-docker-healthcheck
-HEALTHCHECK --interval=5s --timeout=3s CMD curl --fail http://$SERVER_ADDRESS:$SERVER_PORT/stats || exit 1
+HEALTHCHECK --interval=5s --timeout=3s CMD curl --fail http://$ADDRESS:$PORT/stats || exit 1
 
 CMD [ "webhook" ]
 
