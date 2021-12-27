@@ -1,7 +1,7 @@
 use actix_web::dev::RequestHead;
 use actix_web::http::header::ContentType;
 use actix_web::http::StatusCode;
-use actix_web::{get, post, web, Either, HttpResponse, HttpResponseBuilder, Responder, Result};
+use actix_web::{get, post, web, Either, HttpResponse, HttpResponseBuilder, Responder};
 
 use crate::{model::Info, storage};
 
@@ -11,7 +11,10 @@ pub fn get_scope(path: &str) -> actix_web::Scope {
 
 /// extract `Info` using serde
 #[post("/webhook", guard = "webhook_guard")]
-async fn webhook(info: Either<web::Json<Info>, String>) -> impl Responder {
+async fn webhook(
+    storage: web::Data<storage::Storage<Info>>,
+    info: Either<web::Json<Info>, String>,
+) -> impl Responder {
     log::debug!("Received webhook data {:?}", info);
 
     // check type
@@ -27,14 +30,12 @@ async fn webhook(info: Either<web::Json<Info>, String>) -> impl Responder {
         },
     };
 
-    // TODO: send correctly serialized data to next function
-
     // move information direcly, so not to block the response for too long
-    storage::store(info);
+    // TODO: FIX THIS
+    storage.store(info).await;
 
     // No response needed according to example
-    let rep = HttpResponseBuilder::new(StatusCode::OK).finish();
-    rep
+    HttpResponseBuilder::new(StatusCode::OK).finish()
 }
 
 fn webhook_guard(req: &RequestHead) -> bool {
@@ -56,17 +57,19 @@ fn webhook_guard(req: &RequestHead) -> bool {
 }
 
 #[get("/stats")]
-async fn stats() -> Result<impl Responder> {
+async fn stats(storage: web::Data<storage::Storage<Info>>) -> impl Responder {
     log::debug!("webhook stats");
 
-    let data = storage::serialized();
+    let data = storage.data().await;
 
-    // Weird Content-Type needed according to example
+    log::debug!("sending <{:?}>", data);
+
+    // // Weird Content-Type needed according to example
     let ctype: mime::Mime = "application/json; charset=utf-8"
         .parse()
         .expect("Unable to parse content type...");
 
-    Ok(HttpResponseBuilder::new(StatusCode::OK)
+    HttpResponseBuilder::new(StatusCode::OK)
         .insert_header(ContentType(ctype))
-        .json(&*data))
+        .json(data)
 }

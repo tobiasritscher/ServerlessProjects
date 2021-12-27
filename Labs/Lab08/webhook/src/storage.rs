@@ -1,89 +1,49 @@
 use futures::FutureExt;
-use once_cell::sync::OnceCell;
-use parking_lot::{Mutex, RwLock, RwLockReadGuard};
-use std::{
-    collections::VecDeque,
-    ops::{Deref, DerefMut},
+use std::{collections::VecDeque, sync::Arc};
+use tokio::sync::{
+    mpsc::{unbounded_channel, UnboundedReceiver, UnboundedSender},
+    oneshot,
 };
-use tokio::sync::mpsc::{unbounded_channel, UnboundedReceiver, UnboundedSender};
 
-use crate::{model::Info, timestamp};
+use crate::timestamp;
 
 pub const RUNNER_TIMEOUT: u64 = 5;
 
 pub const DATA_MAX_AGE: std::time::Duration = std::time::Duration::from_secs(60 * 5);
 
-pub trait Creation: serde::Serialize + std::fmt::Debug + std::clone::Clone {
+pub trait Storable: serde::Serialize + std::fmt::Debug + std::clone::Clone {
     fn timestamp(&self) -> &timestamp::TimeStamp;
 }
-
 #[derive(serde::Serialize, Debug)]
 #[serde(transparent)]
-pub struct Blocks<T: Creation>(VecDeque<T>);
+pub struct Data<T>(Vec<Arc<T>>);
 
-impl<T: Creation> Blocks<T> {
+struct InnerStorage<T> {
+    data: VecDeque<Arc<T>>,
+}
+
+impl<T: Storable> InnerStorage<T> {
     fn new() -> Self {
-        Self(VecDeque::new())
-    }
-}
-
-impl<T: Creation> Deref for Blocks<T> {
-    type Target = VecDeque<T>;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl<T: Creation> DerefMut for Blocks<T> {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-
-struct Storage<T: Creation> {
-    data: RwLock<Blocks<T>>,
-    send: UnboundedSender<T>,
-    recv: Mutex<UnboundedReceiver<T>>,
-}
-
-impl<T: Creation> Storage<T> {
-    fn new() -> Self {
-        let (send, recv) = unbounded_channel();
-        let recv = Mutex::new(recv);
-        let data = RwLock::new(Blocks::new());
-        Self { data, send, recv }
+        let data = VecDeque::new();
+        Self { data }
     }
 
-    fn store(&self, data: T) {
+    fn store(&mut self, data: T) {
         // SAFETY: unwrap is safe here as there is no way for this function
         // to fail, given that both sender and receiver are bound to this
         // struct.
-        self.send
-            .send(data)
-            .expect("Sending the info has failed... This should never ever happen...");
+        self.data.push_back(Arc::new(data));
     }
 
-    async fn resv(&self) -> T {
-        // SAFETY: unwrap is safe here as there is no way for this function
-        // to fail, given that both sender and receiver are bound to this
-        // struct.
-        let data = self.recv.lock().recv().await;
-        let data = data.expect("Receiving the info has failed... This should never ever happen...");
-        self.data.write().push_back(data.clone());
-        data
-    }
-
-    fn pop(&self) {
+    fn pop(&mut self) {
         // SAFETY: unwrap is safe here as there is no way for this function
         // to fail, as we know that data_max_age works
         let max_age = chrono::Duration::from_std(DATA_MAX_AGE)
             .expect("unable to convert std duration to chrono");
 
         // get lock
-        let mut data = self.data.write();
-        while !data.is_empty() {
-            let be_dropped = if let Some(entry) = data.front() {
+        while !self.data.is_empty() {
+            let be_dropped = if let Some(entry) = self.data.front() {
                 **entry.timestamp() < chrono::Utc::now() - max_age
             } else {
                 false
@@ -92,37 +52,132 @@ impl<T: Creation> Storage<T> {
                 break;
             }
             // we now drop the front
-            let _ = data.pop_front();
+            let _ = self.data.pop_front();
         }
+    }
+
+    fn inner(&self) -> Data<T> {
+        // This is cheap, although there is some allocation needed
+        Data(self.data.iter().cloned().collect())
     }
 }
 
-pub fn store(data: Info) {
-    get_storage().store(data);
+#[derive(Clone)]
+struct SeriSend<T>(UnboundedSender<oneshot::Sender<Data<T>>>);
+
+impl<T: std::fmt::Debug> SeriSend<T> {
+    async fn send(&self) -> Result<Data<T>, anyhow::Error> {
+        let (send, recv) = oneshot::channel();
+        self.0
+            .send(send)
+            .map_err(|err| anyhow::anyhow!(format!("Unable to send the data because <{}>", err)))?;
+        let data = recv.await?;
+        Ok(data)
+    }
 }
 
-pub fn serialized() -> RwLockReadGuard<'static, Blocks<Info>> {
-    get_storage().data.read()
+struct SeriRecv<T>(UnboundedReceiver<oneshot::Sender<Data<T>>>);
+
+impl<T> SeriRecv<T> {
+    async fn recv(&mut self) -> Option<oneshot::Sender<Data<T>>> {
+        self.0.recv().await
+    }
 }
 
-fn get_storage() -> &'static Storage<Info> {
-    static INSTANCE: OnceCell<Storage<Info>> = OnceCell::new();
-    INSTANCE.get_or_init(Storage::new)
+fn new_seri<T>() -> (SeriSend<T>, SeriRecv<T>) {
+    let (s, r) = unbounded_channel();
+    (SeriSend(s), SeriRecv(r))
 }
 
-pub async fn handler<F, Fut>(info_handler: F)
-where
-    F: Fn(Info) -> Fut,
-    Fut: std::future::Future<Output = ()>,
-{
-    let sleep_time = std::time::Duration::from_secs(RUNNER_TIMEOUT);
-    let storage = get_storage();
+#[derive(Clone)]
+pub struct Storage<T> {
+    send: UnboundedSender<T>,
+    seri_req: SeriSend<T>,
+}
 
-    loop {
-        // none blocking wait
-        futures::select! {
-            _ = tokio::time::sleep(sleep_time).fuse() => storage.pop(),
-            data = storage.resv().fuse() => info_handler(data).await,
+impl<T: std::fmt::Debug> Storage<T> {
+    fn new(send: UnboundedSender<T>) -> (Self, SeriRecv<T>) {
+        let (s, r) = new_seri();
+        (Self { send, seri_req: s }, r)
+    }
+
+    pub async fn store(&self, data: T) {
+        // SAFETY: unwrap is safe here as there is no way for this function
+        // to fail, given that both sender and receiver are bound to this
+        // struct.
+        self.send
+            .send(data)
+            .expect("Sending the info has failed... This should never ever happen...");
+    }
+
+    pub async fn data(&self) -> Data<T> {
+        self.seri_req
+            .send()
+            .await
+            .expect("Sending back the requested data failed")
+    }
+}
+
+pub struct StorageHandler<T> {
+    storage: InnerStorage<T>,
+    storage_sender: Storage<T>,
+    data_recv: UnboundedReceiver<T>,
+    seri_recv: SeriRecv<T>,
+}
+
+impl<T: Storable> StorageHandler<T> {
+    pub fn new() -> Self {
+        let (send, data_recv) = unbounded_channel();
+        let (storage_sender, seri_recv) = Storage::new(send);
+        let storage = InnerStorage::new();
+
+        Self {
+            storage,
+            storage_sender,
+            seri_recv,
+            data_recv,
+        }
+    }
+
+    pub fn get_storage(&self) -> Storage<T> {
+        self.storage_sender.clone()
+    }
+
+    fn handle_data_req(&self, snd: Option<oneshot::Sender<Data<T>>>) {
+        if let Some(snd) = snd {
+            snd.send(self.storage.inner())
+                .expect("Unable to send data, as receiver died...");
+        }
+    }
+
+    async fn handle_data<F, Fut>(&mut self, data: Option<T>, info_handler: &F)
+    where
+        F: Fn(T) -> Fut,
+        Fut: std::future::Future<Output = ()>,
+    {
+        match data {
+            Some(data) => {
+                self.storage.store(data.clone());
+                info_handler(data).await;
+            }
+            None => panic!("Something went wrong, with receving the data..."),
+        }
+    }
+
+    pub async fn handler<F, Fut>(&mut self, info_handler: F)
+    where
+        F: Fn(T) -> Fut,
+        Fut: std::future::Future<Output = ()>,
+    {
+        let sleep_time = std::time::Duration::from_secs(RUNNER_TIMEOUT);
+
+        loop {
+            // none blocking wait
+            futures::select! {
+                _ = tokio::time::sleep(sleep_time).fuse() => self.storage.pop(),
+                data = self.data_recv.recv().fuse() => self.handle_data(data, &info_handler).await,
+                send = self.seri_recv.recv().fuse() => self.handle_data_req(send)
+            }
         }
     }
 }

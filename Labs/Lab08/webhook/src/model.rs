@@ -1,4 +1,4 @@
-use crate::{storage::Creation, timestamp};
+use crate::{storage::Storable, timestamp};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone)]
@@ -13,7 +13,7 @@ pub struct Info {
     timestamp: timestamp::TimeStamp,
 }
 
-impl Creation for Info {
+impl Storable for Info {
     fn timestamp(&self) -> &timestamp::TimeStamp {
         &self.timestamp
     }

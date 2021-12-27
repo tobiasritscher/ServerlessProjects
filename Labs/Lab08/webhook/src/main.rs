@@ -55,16 +55,25 @@ async fn main() -> std::io::Result<()> {
 
     log::info!("setting up server on {}", server_addr);
 
-    // initialize the http server
-    let server = HttpServer::new(|| actix_web::App::new().service(routes::get_scope("")))
-        .bind(server_addr)?
-        .run();
-
     // initialize the temporary data storage and give the db handler to it to be called
-    // on an event
-    let runner = storage::handler(|info| async {
+    let mut storage_handler = storage::StorageHandler::new();
+
+    // needs to be done now as runner will borrow storage_handler muatable
+    let storage = storage_handler.get_storage();
+
+    let runner = storage_handler.handler(|info| async {
         db::handle(info, db_addr.as_deref()).await;
     });
+
+    // initialize the http server
+    let server = HttpServer::new(move || {
+        use actix_web::{web, App};
+        App::new()
+            .app_data(web::Data::new(storage.clone()))
+            .service(routes::get_scope(""))
+    })
+    .bind(server_addr)?
+    .run();
 
     futures::select! {
         res = server.fuse() => res,
