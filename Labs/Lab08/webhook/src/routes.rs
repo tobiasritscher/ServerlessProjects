@@ -27,7 +27,7 @@ async fn webhook(info: Either<web::Json<Info>, String>) -> impl Responder {
         },
     };
 
-    // TODO: Other work
+    // TODO: send correctly serialized data to next function
 
     // move information direcly, so not to block the response for too long
     storage::store(info);

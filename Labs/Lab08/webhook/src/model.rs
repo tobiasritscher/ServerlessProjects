@@ -1,7 +1,7 @@
 use crate::{storage::Creation, timestamp};
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone)]
 pub struct Info {
     id: String,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -19,15 +19,15 @@ impl Creation for Info {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
-#[serde(transparent)]
-pub struct Stats {
-    data: Vec<Info>,
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone)]
+    #[serde(transparent)]
+    pub struct Stats {
+        data: Vec<Info>,
+    }
 
     const WEBHOOK: &str = r#"{"id": "test1", "data": "test2", "device_data": "test3"}"#;
 

@@ -13,7 +13,7 @@ pub const RUNNER_TIMEOUT: u64 = 5;
 
 pub const DATA_MAX_AGE: std::time::Duration = std::time::Duration::from_secs(60 * 5);
 
-pub trait Creation: serde::Serialize + std::fmt::Debug {
+pub trait Creation: serde::Serialize + std::fmt::Debug + std::clone::Clone {
     fn timestamp(&self) -> &timestamp::TimeStamp;
 }
 
@@ -64,13 +64,14 @@ impl<T: Creation> Storage<T> {
             .expect("Sending the info has failed... This should never ever happen...");
     }
 
-    async fn resv(&self) {
+    async fn resv(&self) -> T {
         // SAFETY: unwrap is safe here as there is no way for this function
         // to fail, given that both sender and receiver are bound to this
         // struct.
         let data = self.recv.lock().recv().await;
         let data = data.expect("Receiving the info has failed... This should never ever happen...");
-        self.data.write().push_back(data);
+        self.data.write().push_back(data.clone());
+        data
     }
 
     fn pop(&self) {
@@ -109,15 +110,19 @@ fn get_storage() -> &'static Storage<Info> {
     INSTANCE.get_or_init(Storage::new)
 }
 
-pub async fn handler() {
+pub async fn handler<F, Fut>(info_handler: F)
+where
+    F: Fn(Info) -> Fut,
+    Fut: std::future::Future<Output = ()>,
+{
     let sleep_time = std::time::Duration::from_secs(RUNNER_TIMEOUT);
     let storage = get_storage();
 
     loop {
         // none blocking wait
         futures::select! {
-             _ = tokio::time::sleep(sleep_time).fuse() => storage.pop(),
-            _ = storage.resv().fuse() => {}
-        };
+            _ = tokio::time::sleep(sleep_time).fuse() => storage.pop(),
+            data = storage.resv().fuse() => info_handler(data).await,
+        }
     }
 }
