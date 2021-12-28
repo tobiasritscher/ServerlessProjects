@@ -1,5 +1,6 @@
 mod db;
 mod healthcheck;
+mod logger;
 mod model;
 mod routes;
 mod storage;
@@ -44,7 +45,7 @@ fn setup() -> String {
         set_var(LOGGER_ENV, VALUE);
     }
 
-    pretty_env_logger::init_timed();
+    logger::setup(LOGGER_ENV);
 
     const BASE_ADDRESS_ENV: &str = "127.0.0.1:8000";
     const SERVER_ADDRESS_ENV: &str = "ADDRESS";

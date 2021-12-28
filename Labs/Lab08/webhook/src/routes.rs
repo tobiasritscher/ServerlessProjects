@@ -64,7 +64,6 @@ async fn webhook(
     };
 
     // move information direcly, so not to block the response for too long
-    // TODO: FIX THIS
     storage.store(info).await;
 
     // No response needed according to example

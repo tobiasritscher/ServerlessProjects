@@ -1,8 +1,10 @@
-ARG THE_USER=internal
+ARG THE_USER=internal \ 
+    IPORT=8000
 
 ## first stage base system
 FROM messense/rust-musl-cross:x86_64-musl as chef
-ARG THE_USER
+ARG THE_USER \ 
+    IPORT    
 
 # using the root user so that we can install stuff
 USER root
@@ -13,7 +15,8 @@ WORKDIR /app
 
 ## second stage
 FROM chef as planner
-ARG THE_USER
+ARG THE_USER \ 
+    IPORT    
 
 # Prepare the recipe with that we can create the cash layer
 COPY . .
@@ -21,7 +24,8 @@ RUN cargo chef prepare --recipe-path recipe.json
 
 ## third stage
 FROM chef as builder
-ARG THE_USER
+ARG THE_USER \ 
+    IPORT    
 
 # Create appuser
 
@@ -57,7 +61,8 @@ RUN upx --best --ultra-brute  /app/target/x86_64-unknown-linux-musl/release/webh
 
 ## final (fourth) stage
 FROM scratch as runtime
-ARG THE_USER
+ARG THE_USER \ 
+    IPORT    
 
 # Import from builder.
 COPY --from=builder /etc/passwd /etc/passwd
@@ -72,7 +77,6 @@ USER "${THE_USER}:${THE_USER}"
 
 # Required ENV PATHS
 # define the needed internal port
-ARG IPORT=8000
 ENV ADDRESS="0.0.0.0" \
 	PORT=${IPORT}
 
