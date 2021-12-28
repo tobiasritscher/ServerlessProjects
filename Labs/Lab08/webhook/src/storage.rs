@@ -157,11 +157,17 @@ impl<T: Storable> StorageHandler<T> {
     {
         match data {
             Some(data) => {
+                log::debug!("inserting data into local storage");
                 self.storage.store(data.clone());
+                log::debug!("calling callback function");
                 info_handler(data).await;
             }
             None => panic!("Something went wrong, with receving the data..."),
         }
+    }
+
+    pub fn handle_pop(&mut self) {
+        self.storage.pop()
     }
 
     pub async fn handler<F, Fut>(&mut self, info_handler: F)
@@ -174,7 +180,7 @@ impl<T: Storable> StorageHandler<T> {
         loop {
             // none blocking wait
             futures::select! {
-                _ = tokio::time::sleep(sleep_time).fuse() => self.storage.pop(),
+                _ = tokio::time::sleep(sleep_time).fuse() => self.handle_pop(),
                 data = self.data_recv.recv().fuse() => self.handle_data(data, &info_handler).await,
                 send = self.seri_recv.recv().fuse() => self.handle_data_req(send)
             }

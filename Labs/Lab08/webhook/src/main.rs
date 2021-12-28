@@ -39,6 +39,7 @@ fn setup() -> String {
             const VALUE: &str = "warn";
         }
     }
+
     if var(LOGGER_ENV).is_err() {
         set_var(LOGGER_ENV, VALUE);
     }
@@ -56,6 +57,7 @@ fn setup() -> String {
         (Ok(addr), Ok(port)) => format!("{}:{}", addr, port),
         _ => BASE_ADDRESS_ENV.to_string(),
     };
+
     server
 }
 

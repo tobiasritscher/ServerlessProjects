@@ -4,11 +4,11 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone)]
 pub struct Info {
     id: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    region_id: Option<String>,
+    #[serde(default)]
+    region_id: String,
     data: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    device_data: Option<String>,
+    #[serde(default)]
+    device_data: String,
     #[serde(skip_deserializing)]
     timestamp: timestamp::TimeStamp,
 }
@@ -31,14 +31,14 @@ mod tests {
 
     const WEBHOOK: &str = r#"{"id": "test1", "data": "test2", "device_data": "test3"}"#;
 
-    const STATS: &str = r#"[{"id":"test1","data":"test2","device_data":"test3","timestamp":"2021-12-25T17:16:15.095455462Z"}]"#;
+    const STATS: &str = r#"[{"id":"test1","region_id":"","data":"test2","device_data":"test3","timestamp":"2021-12-25T17:16:15.095455462Z"}]"#;
 
     fn get_serialized_webhook() -> Info {
         Info {
             id: "test1".to_string(),
-            region_id: None,
+            region_id: "".to_string(),
             data: "test2".to_string(),
-            device_data: Some("test3".to_string()),
+            device_data: "test3".to_string(),
             timestamp: timestamp::TimeStamp::default(),
         }
     }
