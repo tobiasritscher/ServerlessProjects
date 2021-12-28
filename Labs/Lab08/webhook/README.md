@@ -22,6 +22,6 @@ before sending it to the DB.
 ```
 
 GET requests:
-- [/](https://scad-webhook-vfj4g5oy5q-oa.a.run.app/) Root gives an overview over all the endpoints
+- [/ (root)](https://scad-webhook-vfj4g5oy5q-oa.a.run.app/) Root gives an overview over all the endpoints
 - [/stats](https://scad-webhook-vfj4g5oy5q-oa.a.run.app/stats) Will return the webhook request 
 information send during the last five minutes. Attention due to scaling this information is not safe to use
