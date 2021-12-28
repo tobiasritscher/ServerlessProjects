@@ -1,4 +1,5 @@
 # first stage base system
+ARG USER=internal 
 FROM messense/rust-musl-cross:x86_64-musl as chef
 
 # using the root user so that we can install stuff
@@ -11,12 +12,24 @@ WORKDIR /app
 # second stage
 FROM chef as planner
 
-
 # Prepare the recipe with that we can create the cash layer
 COPY . .
 RUN cargo chef prepare --recipe-path recipe.json
 
 FROM chef as builder
+
+# Create appuser
+ENV USER=internal
+ENV UID=10001
+
+RUN adduser \
+    --disabled-password \
+    --gecos "" \
+    --home "/nonexistent" \
+    --shell "/sbin/nologin" \
+    --no-create-home \
+    --uid "${UID}" \
+    "${USER}"
 
 # download build deps
 RUN apt-get update && apt-get install upx -y
@@ -39,14 +52,22 @@ RUN upx --best --ultra-brute  /app/target/x86_64-unknown-linux-musl/release/webh
 # final stage
 FROM scratch as runtime
 
+# Import from builder.
+COPY --from=builder /etc/passwd /etc/passwd
+COPY --from=builder /etc/group /etc/group
+
 # Copy the now builded file from the build image to 
 # the current small one
 COPY --from=builder /app/target/x86_64-unknown-linux-musl/release/webhook /usr/local/bin/
 
+# Use an unprivileged user.
+USER internal:internal
+
 # Required ENV PATHS
 # define the needed internal port
+ARG IPORT=8000
 ENV ADDRESS="0.0.0.0" \
-	PORT=8000
+	PORT=${IPORT}
 
 # EXPOSE the internally used port to the outside world
 EXPOSE ${IPORT}
