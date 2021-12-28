@@ -1,15 +1,30 @@
 mod db;
+mod healthcheck;
 mod model;
 mod routes;
 mod storage;
 mod timestamp;
 
+use std::env::{set_var, var};
+
 use actix_web::HttpServer;
 use cfg_if::cfg_if;
+use clap::Parser;
 use futures::FutureExt;
 
-fn setup() -> (String, Option<String>) {
-    use std::env::{set_var, var};
+#[derive(Parser, Debug)]
+#[clap(
+    name = "Webhook",
+    about = "A webhook for the SCAD-CLUELESS implementation of the Proxity Beacons.",
+    version,
+    author
+)]
+struct Args {
+    #[clap(short = 'c', long)]
+    healthcheck: bool,
+}
+
+fn setup() -> String {
     const LOGGER_ENV: &str = "RUST_LOG";
 
     cfg_if! {
@@ -28,16 +43,21 @@ fn setup() -> (String, Option<String>) {
     const BASE_ADDRESS_ENV: &str = "127.0.0.1:8000";
     const SERVER_ADDRESS_ENV: &str = "ADDRESS";
     const SERVER_PORT_ENV: &str = "PORT";
-    const DB_ADDRESS_ENV: &str = "DB";
 
     let server_addr = var(SERVER_ADDRESS_ENV);
     let server_port = var(SERVER_PORT_ENV);
-    let db_addr = var(DB_ADDRESS_ENV);
 
     let server = match (server_addr, server_port) {
         (Ok(addr), Ok(port)) => format!("{}:{}", addr, port),
         _ => BASE_ADDRESS_ENV.to_string(),
     };
+    server
+}
+
+fn setup_server() -> Option<String> {
+    const DB_ADDRESS_ENV: &str = "DB";
+
+    let db_addr = var(DB_ADDRESS_ENV);
 
     if db_addr.is_err() {
         log::warn!(
@@ -46,13 +66,10 @@ fn setup() -> (String, Option<String>) {
         );
     }
 
-    (server, db_addr.ok())
+    db_addr.ok()
 }
 
-#[actix_web::main]
-async fn main() -> std::io::Result<()> {
-    let (server_addr, db_addr) = setup();
-
+async fn serve(server_addr: &str, db_addr: Option<&str>) -> std::io::Result<()> {
     log::info!("setting up server on {}", server_addr);
 
     // initialize the temporary data storage and give the db handler to it to be called
@@ -62,7 +79,7 @@ async fn main() -> std::io::Result<()> {
     let storage = storage_handler.get_storage();
 
     let runner = storage_handler.handler(|info| async {
-        db::handle(info, db_addr.as_deref()).await;
+        db::handle(info, db_addr).await;
     });
 
     // initialize the http server
@@ -78,5 +95,21 @@ async fn main() -> std::io::Result<()> {
     futures::select! {
         res = server.fuse() => res,
         _ = runner.fuse() => panic!("the runner should never be able to finish executing")
+    }
+}
+
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    let args = Args::parse();
+    let server_addr = setup();
+
+    if args.healthcheck {
+        let healthcheck_addr = format!("http://{}/stats", server_addr);
+        log::debug!("handling healtheck on addr <{}>", healthcheck_addr);
+        healthcheck::check(&healthcheck_addr).await;
+        Ok(())
+    } else {
+        let db_addr = setup_server();
+        serve(&server_addr, db_addr.as_deref()).await
     }
 }
