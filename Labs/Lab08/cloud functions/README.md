@@ -5,7 +5,7 @@ Endpoints:
 
 POST request:
 
-- /createDatapoint creates a new datapoint
+- [/createDatapoint](https://us-central1-beacon-2de55.cloudfunctions.net/createDatapoint) creates a new datapoint
 
 {
 
@@ -25,8 +25,8 @@ POST request:
 
 GET requests:
 
-- /readAllDatapoints returns all datapoints
+- [/readAllDatapoints](https://us-central1-beacon-2de55.cloudfunctions.net/readAllDatapoints) returns all datapoints
 
-- /readDatapoint/regionid/597956666487987 returns all Datapoints with region_id 597956666487987
+- [/readDatapoint/regionid/597956666487987](https://us-central1-beacon-2de55.cloudfunctions.net/readDatapoint/regionid/597956666487987) returns all Datapoints with region_id 597956666487987
 
-- /readDatapoint/id/159763184614576 returns the datapoint with id 159763184614576
+- [/readDatapoint/id/159763184614576](https://us-central1-beacon-2de55.cloudfunctions.net/readDatapoint/regionid/597956666487987) returns the datapoint with id 159763184614576
