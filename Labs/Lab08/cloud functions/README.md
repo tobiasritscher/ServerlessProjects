@@ -5,9 +5,7 @@ Endpoints:
 
 POST request:
 
-- /createDatapoint
-
-creates a new datapoint
+- /createDatapoint creates a new datapoint
 
 {
 
@@ -27,14 +25,8 @@ creates a new datapoint
 
 GET requests:
 
-- /readAllDatapoints
+- /readAllDatapoints returns all datapoints
 
-returns all datapoints
+- /readDatapoint/regionid/597956666487987 returns all Datapoints with region_id 597956666487987
 
-- /readDatapoint/regionid/597956666487987
-
-returns all Datapoints with region_id 597956666487987
-
-- /readDatapoint/id/159763184614576
-
-returns the datapoint with id 159763184614576
+- /readDatapoint/id/159763184614576 returns the datapoint with id 159763184614576
