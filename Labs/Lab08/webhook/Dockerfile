@@ -1,6 +1,8 @@
-# first stage base system
-ARG USER=internal 
+ARG THE_USER=internal
+
+## first stage base system
 FROM messense/rust-musl-cross:x86_64-musl as chef
+ARG THE_USER
 
 # using the root user so that we can install stuff
 USER root
@@ -9,17 +11,21 @@ RUN cargo install cargo-chef
 
 WORKDIR /app
 
-# second stage
+## second stage
 FROM chef as planner
+ARG THE_USER
 
 # Prepare the recipe with that we can create the cash layer
 COPY . .
 RUN cargo chef prepare --recipe-path recipe.json
 
+## third stage
 FROM chef as builder
+ARG THE_USER
 
 # Create appuser
-ENV USER=internal
+
+ENV USER=${THE_USER}
 ENV UID=10001
 
 RUN adduser \
@@ -49,8 +55,9 @@ RUN musl-strip /app/target/x86_64-unknown-linux-musl/release/webhook
 # Compress executable 
 RUN upx --best --ultra-brute  /app/target/x86_64-unknown-linux-musl/release/webhook
 
-# final stage
+## final (fourth) stage
 FROM scratch as runtime
+ARG THE_USER
 
 # Import from builder.
 COPY --from=builder /etc/passwd /etc/passwd
@@ -61,7 +68,7 @@ COPY --from=builder /etc/group /etc/group
 COPY --from=builder /app/target/x86_64-unknown-linux-musl/release/webhook /usr/local/bin/
 
 # Use an unprivileged user.
-USER internal:internal
+USER "${THE_USER}:${THE_USER}"
 
 # Required ENV PATHS
 # define the needed internal port
