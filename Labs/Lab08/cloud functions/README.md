@@ -7,7 +7,7 @@ POST request:
 
 - [/createDatapoint](https://us-central1-beacon-2de55.cloudfunctions.net/createDatapoint) creates a new datapoint
 
-{
+```{
 
     "id":165623652695468451651,
 
@@ -20,7 +20,7 @@ POST request:
     "timestamp":"2021-12-28T12:30:39.615678876Z"
 
 }
-
+```
 
 
 GET requests:
