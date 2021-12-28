@@ -65,8 +65,9 @@ USER internal:internal
 
 # Required ENV PATHS
 # define the needed internal port
+ARG IPORT=8000
 ENV ADDRESS="0.0.0.0" \
-	PORT=8000
+	PORT=${IPORT}
 
 # EXPOSE the internally used port to the outside world
 EXPOSE ${IPORT}
