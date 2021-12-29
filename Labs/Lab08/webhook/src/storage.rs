@@ -36,15 +36,10 @@ impl<T: Storable> InnerStorage<T> {
     }
 
     fn pop(&mut self) {
-        // SAFETY: unwrap is safe here as there is no way for this function
-        // to fail, as we know that data_max_age works
-        let max_age = chrono::Duration::from_std(DATA_MAX_AGE)
-            .expect("unable to convert std duration to chrono");
-
         // get lock
         while !self.data.is_empty() {
             let be_dropped = if let Some(entry) = self.data.front() {
-                **entry.timestamp() < chrono::Utc::now() - max_age
+                **entry.timestamp() < time::OffsetDateTime::now_utc() - DATA_MAX_AGE
             } else {
                 false
             };

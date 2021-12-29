@@ -1,8 +1,6 @@
-use actix_web::dev::RequestHead;
-use actix_web::http::header::ContentType;
-use actix_web::http::StatusCode;
 use actix_web::{
-    get, post, web, Either, HttpRequest, HttpResponse, HttpResponseBuilder, Responder, Result,
+    get, guard::GuardContext, http::header::ContentType, http::StatusCode, post, web, Either,
+    HttpRequest, HttpResponse, HttpResponseBuilder, Responder, Result,
 };
 
 use crate::{model::Info, storage};
@@ -70,10 +68,10 @@ async fn webhook(
     HttpResponseBuilder::new(StatusCode::OK).finish()
 }
 
-fn webhook_guard(req: &RequestHead) -> bool {
+fn webhook_guard(req: &GuardContext) -> bool {
     // allow for json and plain text content types
     use actix_web::http::header;
-    match req.headers().get(header::CONTENT_TYPE) {
+    match req.head().headers().get(header::CONTENT_TYPE) {
         Some(rtype) => match rtype.to_str() {
             Ok(ctype) => {
                 ctype.starts_with(ContentType::json().essence_str())

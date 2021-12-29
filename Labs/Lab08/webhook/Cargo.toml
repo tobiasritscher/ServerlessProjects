@@ -1,15 +1,15 @@
 [package]
 name = "webhook"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2021"
 authors = [ "Adrian Hornung", "SCAD-CLUELESS" ]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-actix-web = "4.0.0-beta.16"
+actix-web = "4.0.0-beta.18"
 serde = { version = "1", features = [ "rc" ] }
-chrono = { version = "0.4", features = [ "serde" ] }
+time = { version = "0.3", default-features= false, features = ["std", "serde", "parsing"] }
 cfg-if = "1.0"
 futures = "0.3"
 tokio = { version =  "1.15", default-features = false }
@@ -24,6 +24,7 @@ clap = { version = "3.0.0-rc.9", default-features = false, features = [ "derive"
 
 [target.'cfg(all(target_env = "musl", target_pointer_width = "64"))'.dependencies.jemallocator]
 version = "0.3"
+
 
 [features]
 
