@@ -28,6 +28,8 @@ GET requests:
 
 - [/readAllDatapoints](https://us-central1-beacon-2de55.cloudfunctions.net/readAllDatapoints) returns all datapoints
 
-- [/readDatapoint/regionid/597956666487987](https://us-central1-beacon-2de55.cloudfunctions.net/readDatapoint/regionid/597956666487987) returns all Datapoints with region_id 597956666487987
+- [/readDatapoint/regionid/6f5b625d-2eb4-44e5-ae41-8eb9b8048f2c](https://us-central1-beacon-2de55.cloudfunctions.net/readDatapoint/regionid/6f5b625d-2eb4-44e5-ae41-8eb9b8048f2c) returns all Datapoints with region_id 6f5b625d-2eb4-44e5-ae41-8eb9b8048f2c
 
-- [/readDatapoint/id/159763184614576](https://us-central1-beacon-2de55.cloudfunctions.net/readDatapoint/regionid/597956666487987) returns the datapoint with id 159763184614576
+- [/readDatapoint/deviceid/e1bfc6cf-d387-4150-ba5c-9f4bb6694f14](https://us-central1-beacon-2de55.cloudfunctions.net/readDatapoint/regionid/e1bfc6cf-d387-4150-ba5c-9f4bb6694f14) returns the datapoint with device id e1bfc6cf-d387-4150-ba5c-9f4bb6694f14
+
+- [/readDatapoint/id/159763184614576](https://us-central1-beacon-2de55.cloudfunctions.net/readDatapoint/regionid/159763184614576) returns the datapoint with unique database id 159763184614576
