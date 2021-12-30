@@ -9,17 +9,11 @@ POST request:
 
 ```
 {
-
-    "id":165623652695468451651,
-
-    "data":"Some more data for another datapoint",
-
-    "region_id": 597956666487987,
-
-    "device_data":"test devide data",
-
-    "timestamp":"2021-12-28T12:30:39.615678876Z"
-
+    "timestamp": "2021-12-30T12:30:39.615678876Z",
+    "id": "e1bfc6cf-d387-4150-ba5c-9f4bb6694f14",
+    "device_data": "device data",
+    "region_id": "6f5b625d-2eb4-44e5-ae41-8eb9b8048f2c",
+    "data": "You are in front of the ZHAW. This is the first beacon you are reaching."
 }
 ```
 
