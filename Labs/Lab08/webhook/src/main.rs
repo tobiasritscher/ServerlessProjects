@@ -18,6 +18,11 @@ use futures::FutureExt;
 #[global_allocator]
 static ALLOC: jemallocator::Jemalloc = jemallocator::Jemalloc;
 
+const LOGGER_ENV: &str = "LOG";
+const SERVER_ADDRESS_ENV: &str = "ADDRESS";
+const SERVER_PORT_ENV: &str = "PORT";
+const BASE_ADDRESS_ENV: &str = "127.0.0.1:8000";
+
 #[derive(Parser, Debug)]
 #[clap(
     name = "Webhook",
@@ -31,8 +36,6 @@ struct Args {
 }
 
 fn setup() -> String {
-    const LOGGER_ENV: &str = "RUST_LOG";
-
     cfg_if! {
         if #[cfg(debug_assertions)]  {
             const VALUE: &str = "debug";
@@ -46,10 +49,6 @@ fn setup() -> String {
     }
 
     logger::setup(LOGGER_ENV);
-
-    const BASE_ADDRESS_ENV: &str = "127.0.0.1:8000";
-    const SERVER_ADDRESS_ENV: &str = "ADDRESS";
-    const SERVER_PORT_ENV: &str = "PORT";
 
     let server_addr = var(SERVER_ADDRESS_ENV);
     let server_port = var(SERVER_PORT_ENV);

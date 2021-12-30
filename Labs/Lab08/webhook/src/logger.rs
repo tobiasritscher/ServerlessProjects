@@ -4,7 +4,13 @@ use env_logger::fmt::{Color, Style, StyledValue};
 use log::Level;
 
 pub fn setup(filter: &str) {
-    env_logger::builder()
+    let mut builder = env_logger::builder();
+
+    if let Ok(ref filter) = std::env::var(filter) {
+        builder.parse_filters(filter);
+    }
+
+    builder
         .format(|buf, rec| {
             let module = rec.target();
 
@@ -20,7 +26,6 @@ pub fn setup(filter: &str) {
 
             writeln!(buf, "[{} {} {}] {}", time, level, module, rec.args())
         })
-        .parse_filters(filter)
         .init();
 }
 
