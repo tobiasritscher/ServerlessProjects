@@ -70,7 +70,7 @@ app.get('/regionid/:regionid', (req, res) => {
             const query = db.collection('datapoint');
 
             let response = []
-            const region_id = parseInt(req.params.regionid)
+            const region_id = req.params.regionid
 
             var querySnapshot = await query.where('region_id','==',region_id).get();   
             querySnapshot.forEach(doc => {
@@ -80,6 +80,26 @@ app.get('/regionid/:regionid', (req, res) => {
         } catch (error) {
             res.status(500).send(error);
         }
-        })();
+    })();
 });
+
+app.get('/deviceid/:deviceid', (req, res) => {
+    (async () => {
+        try {
+            const query = db.collection('datapoint');
+
+            let response = []
+            const device_id = req.params.deviceid
+
+            var querySnapshot = await query.where('id','==',device_id).get();   
+            querySnapshot.forEach(doc => {
+                response.push(doc.data());
+            });
+            res.status(200).send(response);
+        } catch (error) {
+            res.status(500).send(error);
+        }
+    })();
+});
+
 exports.readDatapoint = functions.https.onRequest(app);
