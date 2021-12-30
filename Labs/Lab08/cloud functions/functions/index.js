@@ -103,3 +103,4 @@ app.get('/deviceid/:deviceid', (req, res) => {
 });
 
 exports.readDatapoint = functions.https.onRequest(app);
+

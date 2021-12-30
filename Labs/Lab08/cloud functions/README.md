@@ -32,4 +32,4 @@ GET requests:
 
 - [/readDatapoint/deviceid/e1bfc6cf-d387-4150-ba5c-9f4bb6694f14](https://us-central1-beacon-2de55.cloudfunctions.net/readDatapoint/regionid/e1bfc6cf-d387-4150-ba5c-9f4bb6694f14) returns the datapoint with device id e1bfc6cf-d387-4150-ba5c-9f4bb6694f14
 
-- [/readDatapoint/id/159763184614576](https://us-central1-beacon-2de55.cloudfunctions.net/readDatapoint/regionid/159763184614576) returns the datapoint with unique database id 159763184614576
+- [/readDatapoint/id/16408793150665654](https://us-central1-beacon-2de55.cloudfunctions.net/readDatapoint/regionid/16408793150665654) returns the datapoint with unique database id 16408793150665654
