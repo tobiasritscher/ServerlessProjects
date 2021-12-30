@@ -9,8 +9,9 @@ const db = admin.firestore();
 exports.createDatapoint = functions.https.onRequest((req, res) => {
     (async () => {
         try {
-          const id = await req.body.id
-          await db.collection('datapoint').doc('/' + id + '/')
+            var ran = Math.floor(Math.random()*10000);
+            ran = parseInt(Date.now()+""+n);
+          await db.collection('datapoint').doc('/' + ran + '/')
               .create({
               id: req.body.id,
               data: req.body.data,
