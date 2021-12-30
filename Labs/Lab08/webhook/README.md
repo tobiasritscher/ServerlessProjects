@@ -1,6 +1,21 @@
 # Webhook
 Based on information of the proximity-eu go example [repo](https://github.com/proxity-eu/WebhookBackendExample).
 
+The container is hosted on [Docker Hub](https://hub.docker.com/repository/docker/thebluefirefox/scad-webhook) and 
+only need a few enviroment variables to setup correctly. 
+
+ENV-variables:
+- `DB` is the correct link to the database function<br>
+    If this is not set there will be a warning log, however the server will still 
+    run. 
+- `RUST_LOG` is the dynamic logging level that is supported by the system<br>
+   Supported levels:  
+    - `error`
+    - `warn` (default)
+    - `info`
+    - `debug`
+    - `trace`
+
 URL: https://scad-webhook-vfj4g5oy5q-oa.a.run.app 
 
 Endpoints:
