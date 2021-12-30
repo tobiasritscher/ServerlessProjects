@@ -8,7 +8,7 @@ ENV-variables:
 - `DB` is the correct link to the database function<br>
     If this is not set there will be a warning log, however the server will still 
     run. 
-- `RUST_LOG` is the dynamic logging level that is supported by the system<br>
+- `LOG` is the dynamic logging level that is supported by the system<br>
    Supported levels:  
     - `error`
     - `warn` (default)
