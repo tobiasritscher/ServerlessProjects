@@ -19,7 +19,7 @@ The system is build up from different parts all working over an HTTP event based
 
 ![architecture diagram](imgs/architecture_diagram.svg?raw=true "Architecture Diagram")
 
-# Flutter App
+# flutter_app
 
 To run this flutter app the follow the steps in this tutorial: https://docs.flutter.dev/get-started/install
 1. Install the Flutter SDK
@@ -29,8 +29,19 @@ To run this flutter app the follow the steps in this tutorial: https://docs.flut
 
 Run the app
 1. Open the project with the IDE
-3. Run the "flutter pub get" command to install all dependencies
-4. Use the command "flutter run" to run the app on the virtual device
+3. Run the ```flutter pub get``` command to install all dependencies
+4. Use the command ```flutter run``` to run the app on the virtual device
+
+## Functionality of the app
+The app is a prove of concept since the real app would need text to speech and further improvements to be used by a blind person.
+* You can enter your device_id and it will fetch all data points associated to it from the firebase database.
+* The app updates the data points each 2 seconds to guarantee that the newest data points are loaded.
+
+## Functionality of the app
+The app is a prove of concept since the real app would need text to speech and further improvements to be used by a blind person.
+* You can enter your device_id and it will fetch all data points associated to it from the firebase database.
+* The app updates the data points each 2 seconds to guarantee that the newest data points are loaded.
+
 
 # Goals
 1) Event-driven: When a user is close to a beacon, an http trigger will fire the corresponding cloud function.
