@@ -11,7 +11,7 @@ Run the app
 3. Run the ```flutter pub get``` command to install all dependencies
 4. Use the command ```flutter run``` to run the app on the virtual device
 
-# Functionality of the app
+## Functionality of the app
 The app is a prove of concept since the real app would need text to speech and further improvements to be used by a blind person.
 * You can enter your device_id and it will fetch all data points associated to it from the firebase database.
 * The app updates the data points each 2 seconds to guarantee that the newest data points are loaded.
