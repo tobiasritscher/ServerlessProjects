@@ -47,4 +47,6 @@ The app is a prove of concept since the real app would need text to speech and f
 ![flyer](ProLoc_FLyer.png)
 
 # Pitch Video
-link to video
+[Video here](https://zhaw-my.sharepoint.com/:v:/g/personal/kuendkun_students_zhaw_ch/EWq-CG-ltWhOkh9P_GvjfjIB7gInOmg1r90-EcDcyh-_IA?e=x7yEhg)
+Before viewing you might need to download the video.
+
