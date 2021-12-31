@@ -21,7 +21,7 @@ The system is build up from different parts all working over an HTTP event based
 
 # flutter_app
 
-To intall this flutter app the follow the steps in this tutorial: https://docs.flutter.dev/get-started/install
+To run this flutter app the follow the steps in this tutorial: https://docs.flutter.dev/get-started/install
 1. Install the Flutter SDK
 2. Use the command flutter doctor to check if you installed the SDK correctly
 3. Install the IDE: Android Studio (Windows/Linux) or Xcode (Mac)
