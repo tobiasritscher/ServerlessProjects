@@ -1,16 +1,12 @@
 # flutter_app
 
-A new Flutter project.
+To run this flutter app the follow the steps in this tutorial: https://docs.flutter.dev/get-started/install
+1. Install the Flutter SDK
+2. Use the command flutter doctor to check if you installed the SDK correctly
+3. Install the IDE: Android Studio (Windows/Linux) or Xcode (Mac)
+4. Setup the Android Emulator (Windows/Linux) or the IOS simulator (Mac) and create a virtual device
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Run the app
+1. Open the project with the IDE
+3. Run the "flutter pub get" command to install all dependencies
+4. Use the command "flutter run" to run the app on the virtual device
