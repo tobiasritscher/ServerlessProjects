@@ -44,7 +44,7 @@ The app is a prove of concept since the real app would need text to speech and f
 4) Quality-assured: Software quality is assured as we use google cloud functions that tick off most security and reliability problems. Also, only the allowed http requests are processed. Furthermore, as seen in the section of the architecture diagram, the software is well structured, decoupled and interfaces are designed to make the app extendable. 
 
 # Flyer
-![flyer](ProLoc_Flyer.png)
+![flyer](ProLoc_FLyer.png)
 
 # Pitch Video
 link to video
