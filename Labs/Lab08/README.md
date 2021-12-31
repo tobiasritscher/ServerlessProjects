@@ -8,13 +8,13 @@ The system is build up from different parts all working over an HTTP event based
 
 ## Beacon Event
 1) The [webhook](webhook) receives a beacon event send by Proxity.
-   1) It will forward a now correcly formatted json string to the [databse coud function](cloud functions). 
-2) The DB functions will insert the new data, after creating it a new random id for it, into the firestone db.
+   1) It will post a now correcly formatted json string to the [datbase coud function](cloud functions). 
+2) The cloud functions will be triggered and then insert the new data, after creating it a new random id for it, into the firebase db.
 
 ## Frontend Display Event
-1) The Frontend will call the [databse coud function](cloud functions) to get the 
+1) The Frontend will fire the [datbase coud function](cloud functions) to get the 
    required information.
-2) DB function will querry the databse for the required information.
+2) Cloud function will query the database for the required information.
    1) And return the results
 
 ![architecture diagram](imgs/architecture_diagram.svg?raw=true "Architecture Diagram")
