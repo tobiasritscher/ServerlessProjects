@@ -1,3 +1,7 @@
+# ProLoc
+This project defines and implements a prototype for the ProLoc application. ProLoc will help visually impaired people to naviagte the city. The app is pretty simple and it should be as lightweight as possible, so the users aren't overwhelmed by the features but rather have a ready to use experience. 
+While running, the app is always looking out for beacons. If one is found, the ID of the beacon will be checked in our database and if it is a match, the name of the according building will be returned and showed to the user as a push notification. If the user has turned on the integrated operating aids of his smartphone, the push notification will be read to him by the voice assistance. In the app the user can also define if he is looking for something special, like a shopping center or the ZHAW, and the app will only notify him about relevant buildings. In the future it would also be possible to support public transportation.
+
 # Diagram
 This diagram shows the current setup, of our application. 
 The system is build up from different parts all working over an HTTP event based system.
