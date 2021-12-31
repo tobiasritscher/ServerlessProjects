@@ -223,3 +223,6 @@ The docker compose file defines the frontend and the db (backend)
 this has been converted to Kubernetes manifest file: https://github.zhaw.ch/nguyesyd/SCAD-CLUELESS/tree/master/Labs/Lab07/Kubernetes for uploading to the ZHAW Cloud Lab
 
 Deploying on the ZHAW Cloud Lab did not work. Following this [tutorial](https://info.cloudlab.zhaw.ch/pages/k8s.html) we got stuck at the step to download the credentials. It either does not exist in the current UI version or it seems like we don't have permission. 
+
+## P08
+The analysis and explanation to this are written in the [P08](/Labs/Lab08) folder, due to the inherent complexity of the given system.
