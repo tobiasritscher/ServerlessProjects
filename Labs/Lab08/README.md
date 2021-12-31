@@ -36,7 +36,7 @@ Run the app
 1) Event-driven: When a user is close to a beacon, an http trigger will fire the corresponding cloud function.
 2) Attached to the physical world: Section 'ProLoc' of this READNE is explaining the real-life usage of this app.
 3) Cloud-native: By using cloud functions that communicate with the firebase database (also a cloud service), the scalability of the google cloud platform is guaranteed. Even if an immense number of users are active and cause a request spike, the google cloud will be able to assure load balancing, reliability and add enough ressources.
-4) Quality-assured: As seen in the section of the architecture diagram, the software is well structured, decoupled and interfaces are designed to make the app extendable. Also, only the allowed http requests are processed.
+4) Quality-assured: Software quality is assured as we use google cloud functions that tick off most security and reliability problems. Also, only the allowed http requests are processed. Furthermore, as seen in the section of the architecture diagram, the software is well structured, decoupled and interfaces are designed to make the app extendable. 
 
 # Flyer
 insert here
