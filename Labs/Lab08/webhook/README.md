@@ -4,10 +4,18 @@ Based on information of the proximity-eu go example [repo](https://github.com/pr
 The container is hosted on [Docker Hub](https://hub.docker.com/repository/docker/thebluefirefox/scad-webhook) and 
 only need a few enviroment variables to setup correctly. 
 
-ENV-variables:
+URL: https://scad-webhook-vfj4g5oy5q-oa.a.run.app 
+
+### ENV-variables:
+- `ADDRESS` is the ip address the server will be listening on 
+   and should **not be changed**, as otherwise the server will not be able to communicate.<br>
+   defaults to `0.0.0.0`
+- `PORT` is the port address that the server is listening on and will be set by 
+   the google cloud run runtime. <br>
+   defaults to `8000`
 - `DB` is the correct link to the database function<br>
-    If this is not set there will be a warning log, however the server will still 
-    run. 
+   If this is not set there will be a warning log, however the server will still 
+   run. 
 - `LOG` is the dynamic logging level that is supported by the system<br>
    Supported levels:  
     - `error`
@@ -16,9 +24,20 @@ ENV-variables:
     - `debug`
     - `trace`
 
-URL: https://scad-webhook-vfj4g5oy5q-oa.a.run.app 
 
-Endpoints:
+
+### Quality Analysis
+#### Dockerfile:
+- The end stage uses an artificial `unprivileged user`. To not have the server run as root and with that 
+  expose to a successful hacker root capabilities.
+- The docker container exposes inbuild `healthcheck` capabilities. 
+- It also uses `scratch` as the image base, so that the resulting build size is as small as possible. (2.36MB)
+
+#### Endpoints
+All endpoints check that only the correct HTTP Content-Type is used according to the [spec](https://github.com/proxity-eu/WebhookBackendExample).
+
+
+### Endpoints:
 POST requests:
 - [/webhook](https://scad-webhook-vfj4g5oy5q-oa.a.run.app/webhook) Gets new information from the 
 Protxity app and will forward it to the DB.
