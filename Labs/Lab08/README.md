@@ -37,12 +37,6 @@ The app is a prove of concept since the real app would need text to speech and f
 * You can enter your device_id and it will fetch all data points associated to it from the firebase database.
 * The app updates the data points each 2 seconds to guarantee that the newest data points are loaded.
 
-## Functionality of the app
-The app is a prove of concept since the real app would need text to speech and further improvements to be used by a blind person.
-* You can enter your device_id and it will fetch all data points associated to it from the firebase database.
-* The app updates the data points each 2 seconds to guarantee that the newest data points are loaded.
-
-
 # Goals
 1) Event-driven: When a user is close to a beacon, an http trigger will fire the corresponding cloud function.
 2) Attached to the physical world: Section 'ProLoc' of this READNE is explaining the real-life usage of this app.
