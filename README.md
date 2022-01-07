@@ -1,5 +1,5 @@
 # SCAD-CLUELESS Group 04
-SCAD ZHAW
+Serverless cloud applications ZHAW
 
 ## Team:
 - Adrian Hornung (hornuadr)
